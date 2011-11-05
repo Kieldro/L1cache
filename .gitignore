@@ -1,0 +1,8 @@
+# This file will prevent temp files from apearing to git
+*.dcz
+*.cpz
+*#
+*~
+*.class
+*.pyc
+*.py~
