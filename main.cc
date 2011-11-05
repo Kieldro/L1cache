@@ -1,3 +1,8 @@
+/*
+Ian Buitrago
+Miguel Diaz
+*/
+
 #include <stdio.h>
 #include <iostream.h>
 #include "funcs.h"
