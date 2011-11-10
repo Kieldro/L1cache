@@ -16,7 +16,7 @@ using namespace std;
 void test()
 {
 	MainMemory mem(4000000);
-	mem.print_contents(10, 10, 0);
+	mem.print_contents(12, 24, DEC);
 }
 
 int main (int argc, char *argv[ ])

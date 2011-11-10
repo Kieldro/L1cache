@@ -28,24 +28,31 @@ MainMemory::~MainMemory(){
 }
 
 void MainMemory::print_contents(int from, int to, int format){
-	for(int i = from; i <= to; i++){
-	  for(int j = from; j <= to; j++){
-		  cout  << hex << from << " ";
+	//assert -1 < format < 3
+	
+	int i = from;
+	while(i <= to){
+	
+	  cout  << hex << from << " ";		//print address first
+	  
+	  for(int j = 0; j < 8; j++, i++){
 		  
 		  switch(format){
 		  case HEX:
-		    cout << hex << memory[i];
+		    cout << hex << memory[i] << " ";
 		    break;
 		  case DEC:
-		    cout << memory[i];
+		    cout << memory[i] << " ";
 		    break;
 		  case OCT:
-		    cout << oct << memory[i];
+		    cout << oct << memory[i] << " ";
 		    break;
 		  default:
-		    i = to + 1;		//break loop
 		    cout << "Invalid format";
+		    i = to + 1;		//break loop
 		  }
+		  
+		  cout  << endl;
 	  }
           
 	}
