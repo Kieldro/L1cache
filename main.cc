@@ -13,10 +13,9 @@ Miguel Diaz
 
 using namespace std;
 
-void test()
-{
+void test(){
 	MainMemory mem(4000000);
-	mem.print_contents(12, 24, DEC);
+	mem.print_contents(13, 24, DEC);
 }
 
 int main (int argc, char *argv[ ])

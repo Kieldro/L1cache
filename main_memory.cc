@@ -51,12 +51,10 @@ void MainMemory::print_contents(int from, int to, int format){
 		    cout << "Invalid format";
 		    i = to + 1;		//break loop
 		  }
-		  
-		  cout  << endl;
 	  }
+	  cout  << endl;
           
 	}
-	cout  << endl;
 }
 
 void MainMemory::set_content(int location, int value){
