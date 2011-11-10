@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include <unistd.h> //for the getopt function
 #include <stdlib.h> //for atoi
 

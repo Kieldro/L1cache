@@ -3,9 +3,12 @@ Ian Buitrago
 Miguel Diaz
 */
 
-#include <stdio.h>
-#include <iostream.h>
+#include <cstdio>
+#include <cstdlib>
+#include <iostream>
 #include "funcs.h"
+
+using namespace std;
 
 int main (int argc, char *argv[ ])
 {

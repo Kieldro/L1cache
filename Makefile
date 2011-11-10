@@ -3,8 +3,8 @@
 # them to this list of SRCS
 SRCS = main.cc funcs.cc
 
-CC = /lusr/bin/g++
-LD = /lusr/bin/g++
+CC = /usr/bin/g++
+LD = /usr/bin/g++
 
 # Compiler options
 # IF u want to add any other compiler options add them to CPPFLAGS
