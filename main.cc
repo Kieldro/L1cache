@@ -3,13 +3,21 @@ Ian Buitrago
 Miguel Diaz
 */
 
+#include "main_memory.cc"
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <vector>
 #include "funcs.h"
 
 using namespace std;
+
+void test()
+{
+	MainMemory mem(4000000);
+	mem.print_contents(10, 10, 0);
+}
 
 int main (int argc, char *argv[ ])
 {
@@ -44,6 +52,5 @@ int main (int argc, char *argv[ ])
   cout << "Cache Capacity: " << cache_capacity << endl;
   cout << "Cache BlockSize: " << cache_blocksize << endl;
   cout << "Cache Associativity: " << cache_associativity << endl;
-
+test();
 }
-

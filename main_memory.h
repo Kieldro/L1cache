@@ -21,6 +21,5 @@ class MainMemory{
 		void reset_content(void);
 };
 
-//*** end of the #ifndef
 #endif
 
