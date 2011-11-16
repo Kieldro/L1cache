@@ -1,0 +1,79 @@
+/*
+cache_sim -c4 -b32 -a4
+256 words in output trace
+
+4096 bytes in capacity / 32 bytes per block = 128 blocks
+32 bytes per block / 4 bytes per word = 8 words per block
+8 words per block * 128 blocks = 1024 words
+1024 words * 4 bytes per word = 4096 bytes
+
+Okay. Let's generalize this.
+
+capacity / blocksize / associativity = number of sets
+number of sets * associativity * blocksize = capacity
+*/
+
+#include <iomanip>
+#include <math.h>
+
+cout << "STATISTICS: " << endl;
+cout << "Misses:" << endl;
+cout << "Total: " << "DataReads: " << "DataWrites: " << endl;
+cout << "Number of Dirty Blocks Evicted From the Cache: " << endl << endl;
+
+int blocks = cache_capacity / cache_blocksize;
+int words_per_block = cache_blocksize / 4;
+cout << "CACHE CONTENTS" << endl;
+cout << "Set   V    Tag    Dirty ";
+for(int word_print = 0; word_print < words_per_block; word_print++)
+{
+  cout << "   Word" + word_print + "   ";
+}
+cout << endl;
+
+int set_print = 0;
+int width_of_tag = log(cache_capacity / 4) / log(2);
+int width_of_word = width_of_tag - ((log(words_per_block) / log(2)) - 1);
+// the next four are temp values; the yet-to-be-implemented logic will determine their true values
+int valid = 0;
+int tag = 0;
+int dirty_bit = 0;
+int word_value = 0;
+for(int block_print = 0; block_print < blocks; block_print++)
+{
+  cout << hex << set_print << "     " << valid << setw(width_of_tag) << setfill('0') << tag << "    " << dirty << "    ";
+  for(int words_print = 0; words_print < words_per_block; words_print++)
+  {
+	cout << setw(width_of_word) << setfill('0') << hex << word << "   ";
+  }
+  cout << endl;
+  if((block_print) + 1 % cache_associativity == 0)
+  {
+    set_print++;
+  }
+}
+
+cout << endl;
+
+// now, to print main memory
+
+cout << "MAIN MEMORY: " << endl;
+cout << "Address    Words " << endl;
+
+for(int print = starting_address; print < 1024; print++)
+{
+   if(print % 8 == 0)
+   {
+     cout << print << "   ";
+   }
+   if(print % 8 != 7)
+   {
+     cout << memory[print] << "   ";
+   }
+   else
+   {
+     cout << memory[print] << endl;
+   }
+	 
+   
+}
