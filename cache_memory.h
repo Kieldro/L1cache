@@ -17,6 +17,7 @@ class CacheMemory{
 		int *tag;
 		int *data;
 		int size;
+		int blocksize;
 		int associativity;
 	public: 
 		CacheMemory(int capacity);
