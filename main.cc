@@ -6,7 +6,7 @@ Miguel Diaz
 #include "main_memory.cc"
 #include <cassert>
 #include <cstdio>
-#include <cstdlib>
+#include <stdlib.h>
 #include <iostream>
 #include <vector>
 #include "funcs.h"
@@ -14,23 +14,23 @@ Miguel Diaz
 using namespace std;
 
 void test(){
-	MainMemory mem(4000000);
+	MainMemory mem(1024);
 	mem.print_contents(13, 24, DEC);
 }
 
 int main (int argc, char *argv[ ])
 {
-
   //the values that we get from the 
   //command line will be put into these
   //variables. we can use them later in the program
   //like for checking if they have valid values
+  
   int cache_capacity = 0;
   int cache_blocksize = 0;
   int cache_associativity = 0;
 
   if(!parseParams(argc, argv, cache_capacity, cache_blocksize, cache_associativity)) {
-	exit(2);
+	exit (2);
   }
   
   // -c <capacity> with <capacity> in KB: 4, 8, 16, 32, or 64. 
@@ -52,4 +52,5 @@ int main (int argc, char *argv[ ])
   cout << "Cache BlockSize: " << cache_blocksize << endl;
   cout << "Cache Associativity: " << cache_associativity << endl;
 test();
+return 0;
 }
