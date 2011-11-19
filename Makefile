@@ -1,7 +1,7 @@
 # Adding new Files to the Makefile
 # If u have different filenames or want to add any more sources add
 # them to this list of SRCS
-SRCS = main.cc funcs.cc
+SRCS = main.cc funcs.cc main_memory.cc
 
 CC = /usr/bin/g++
 LD = /usr/bin/g++

@@ -8,4 +8,4 @@
 *.py~
 *.o
 *.swp
-cache_sim
+*.exe
