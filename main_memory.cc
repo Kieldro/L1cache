@@ -19,16 +19,15 @@ MainMemory::MainMemory(int capacity){
      
      for(int set = 0; set < 1024; set++)
      {
-       memory[set] = STARTING_ADDRESS + set;
+		memory[set] = STARTING_ADDRESS + set;
      }
-	 
 }
 
 //*** destructor
 MainMemory::~MainMemory(){
-     if(memory != NULL){
-	delete [] memory;	
-     } 
+    if(memory != NULL){
+		delete [] memory;	
+    } 
 }
 
 void MainMemory::print_contents(int from, int to, int format){
@@ -51,28 +50,27 @@ void MainMemory::print_contents(int from, int to, int format){
 	cout << "Address    Words" << endl;
 	int i = from;
 	while(i <= to){
+		cout  << setw(8) << setfill('0') << hex << i;		//print address first
 
-	  cout  << setw(8) << setfill('0') << hex << i << "   ";		//print address first
-
-	  for(int j = 0; j < 8; j++, i++){
-
-		  switch(format){
-		  case HEX:
-		    cout << setw(8) << setfill('0') << hex << memory[i] << "   ";
-		    break;
-		  case DEC:
-		    cout << setw(8) << setfill('0') << dec << memory[i] << "   ";
-		    break;
-		  case OCT:
-		    cout << setw(8) << setfill('0') << oct << memory[i] << "   ";
-		    break;
-		  default:
-		    cout << "Invalid format";
-		    i = to + 1;		//break loop
-		  }
-	  }
-	  cout  << endl;
-          
+		for(int j = 0; j < 8; j++, i++){
+			cout << "   " << setw(8) << setfill('0');
+			switch(format){
+				case HEX:
+					cout << hex;
+					break;
+				case DEC:
+					cout << dec ;
+					break;
+				case OCT:
+					cout << oct;
+					break;
+				default:
+					cout << "Invalid format";
+					i = to + 1;		//break loop
+			}
+			 cout << memory[i];
+		}
+		cout  << endl;         
 	}
 }
 
