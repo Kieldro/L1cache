@@ -12,7 +12,7 @@ using namespace std;
 class MainMemory{
 	private:
 		int *memory;
-		int size;
+		int capacity;
 	public: 
 		MainMemory(int capacity);
 		~MainMemory();

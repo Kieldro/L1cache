@@ -10,9 +10,9 @@
 using namespace std;
 
 //*** constructor
-MainMemory::MainMemory(int capacity){
-     size = capacity;
-     memory = new (nothrow) int [1024];
+MainMemory::MainMemory(int cap){
+     capacity = cap;
+     memory = new (nothrow) int [capacity];
      if (memory==0){
 		cout << "Failed to allocate memory!\n";
      }
@@ -26,7 +26,7 @@ MainMemory::MainMemory(int capacity){
 //*** destructor
 MainMemory::~MainMemory(){
     if(memory != NULL){
-		delete [] memory;	
+		delete [] memory;
     } 
 }
 
