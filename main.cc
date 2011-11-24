@@ -10,10 +10,10 @@ make ; ./cache_sim -c8 -b16 -a4 < input_trace.txt
 */
 
 #include <iostream>
+#include <vector>
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
-#include <vector>
 #include "funcs.h"
 #include "main_memory.h"
 #include "cache_memory.h"
@@ -36,7 +36,7 @@ int main (int argc, char *argv[ ])
 	int cache_blocksize = 0;
 	int cache_associativity = 0;
 	
-	if(!parseParams(argc, argv, cache_capacity, cache_blocksize, cache_associativity)) {
+	if(!parseParams(argc, argv, cache_capacity, cache_blocksize, cache_associativity) ) {
 		exit (2);
 	}
 	
@@ -61,16 +61,13 @@ int main (int argc, char *argv[ ])
 	
 	run();
 	
-	return 0;
-}
-
-void run(){
 	MainMemory mem;
+	CacheMemory cache(mem, cache_associativity, cache_blocksize, cache_capacity);
 	
 	int read_write;
 	int address;
 	unsigned int data;
-
+	if(DEBUG) cout << "beginning input." << endl;
 	// repeat till we reach the end of the input	
 	while(!feof(stdin)){
 	  	//read in whether to read or write to the cache
@@ -88,12 +85,19 @@ void run(){
 			cout << "Writing data: " << data << " to cache then mem!" << endl;
 			mem.set_content(address, data);		//write to memory
 			
-		}else{
+		}else{		//read
 			cout << "Reading address: " << address << " from cache." << endl;
 		}
 	}
 	
 	if(DEBUG) cout << "While loop terminated." << endl;
+
+	cache.print_contents(0, 100, HEX);
 	
-	mem.print_contents(STARTING_ADDRESS, STARTING_ADDRESS + MEM_CAPACITY, HEX);		// print entire contents of main memory
+	//mem.print_contents(STARTING_ADDRESS, STARTING_ADDRESS + 1023, HEX);
+	
+	return 0;
+}
+
+void run(){
 }

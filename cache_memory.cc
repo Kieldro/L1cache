@@ -7,21 +7,32 @@
 
 using namespace std;
 
-CacheMemory::CacheMemory(int a, int b, int c){
+CacheMemory::CacheMemory(MainMemory m, int a, int b, int c){
+	capacity = c;
+	mem = &m;
 	associativity = a;
 	blocksize = b;
-	capacity = c;
+	hits = misses = writes = reads = evicted = 0;
 	
 	// initialize dirty bits
 	dirty = new bool [capacity];
+	valid = new bool [capacity];
+	if(DEBUG) cout << "SHAZAM!" << endl;
 	for(int i = 0; i < capacity; ++i){
-		valid [i] = dirty[i] = 1;
+		valid [i] = dirty[i] = 0;
 		
 	}
 }
 
+//*** destructor
+CacheMemory::~CacheMemory(){
+    if(memory != NULL){
+		delete [] memory;
+    } 
+}
+
 void CacheMemory::set_content(int location, int value){
-	//More code
+	++writes;
 }
 
 void CacheMemory::reset_content(void){
@@ -29,13 +40,24 @@ void CacheMemory::reset_content(void){
 }
 
 void CacheMemory::print_contents(int from, int to, int format){
+	cout << "STATISTICS:" << endl;
+	cout << "Misses:" << endl;
+	cout << "Total: " << misses;
+	cout << " DataReads: " << reads;
+	cout << " DataWrites: " << writes << endl;
+	cout << "Miss rate: " << endl;
+	cout << "Total: " << misses;
+	cout << " DataReads: " << reads;
+	cout << " DataWrites: " << writes << endl;
+	cout << "Number of Dirty Blocks Evicted From the Cache: " << evicted << endl;
+	
 	//More code
 	cout << "CACHE MEMORY:" << endl;
 	//assert -1 < format < 3
 	cout << "Set    V   Tag   Dirty   Word" << endl;
 	int i = from;
-	while(i <= to){
-		cout << set << valid[i] << *tag << dirty[i] << setw(8) << setfill('0') << hex << i;		//print address first
+	while(i <= capacity-1){
+		cout << set << valid[i] << 0 << dirty[i] << setw(8) << setfill('0') << hex << i;		//print address first
 		//print words
 		for(int j = 0; j < 8; j++, i++){
 			cout << "   " << setw(8) << setfill('0');

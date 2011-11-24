@@ -9,18 +9,6 @@
 using namespace std;
 
 //*** constructor
-MainMemory::MainMemory(int cap){
-     capacity = cap;
-     memory = new (nothrow) int [capacity];
-     if (memory==0){
-		cout << "Failed to allocate memory!\n";
-     }
-     
-     for(int set = 0; set < capacity; set++)
-     {
-		memory[set] = STARTING_ADDRESS + set;
-     }
-}
 
 MainMemory::MainMemory(){
 	if (DEBUG) cout << "Default constructoion.\n";
@@ -44,26 +32,12 @@ MainMemory::~MainMemory(){
 }
 
 void MainMemory::print_contents(int from, int to, int format){
-	struct {int total, reads, writes;} misses, missrate;	//temp
-	int evicted = 0;
-	
-	cout << "STATISTICS:" << endl;
-	cout << "Misses:" << endl;
-	cout << "Total: " << misses.total;
-	cout << " DataReads: " << misses.reads;
-	cout << " DataWrites: " << misses.writes << endl;
-	cout << "Miss rate: " << endl;
-	cout << "Total: " << missrate.total;
-	cout << " DataReads: " << missrate.reads;
-	cout << " DataWrites: " << missrate.writes << endl;
-	cout << "Number of Dirty Blocks Evicted From the Cache: " << evicted << endl;
-	
 	cout << "MAIN MEMORY:" << endl;
 	//assert -1 < format < 3
 	cout << "Address    Words" << endl;
 	
 	int i = 0;
-	to = 1000;
+	to = 1023;
 	while(i <= to){
 		//if(DEBUG) cout << "i = " << dec << i << endl;
 		cout  << setw(8) << setfill('0') << hex << i + STARTING_ADDRESS;		//print address first

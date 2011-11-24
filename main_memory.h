@@ -18,7 +18,6 @@ class MainMemory{
 		int capacity;
 	public: 
 		MainMemory();
-		MainMemory(int capacity);
 		~MainMemory();
 		void print_contents(int from, int to, int format);
 		void set_content(int location, int value);
