@@ -6,10 +6,9 @@ notes:
 run with
 make ; ./cache_sim -c8 -b16 -a4 < input_trace.txt
 
-16BM ==  16 * 1048576 bytes || 16 *1000000 bytes?
+16 MB ==  16 * 1048576 bytes || 16 *1000000 bytes?
 */
 
-//#include "main_memory.cc"
 #include <iostream>
 #include <stdlib.h>
 #include <assert.h>
@@ -19,7 +18,6 @@ make ; ./cache_sim -c8 -b16 -a4 < input_trace.txt
 #include "main_memory.h"
 #include "cache_memory.h"
 
-#define MEM_CAPACITY (16*10485760)
 #define CACHE_READ 0
 #define CACHE_WRITE 1
 
@@ -67,7 +65,7 @@ int main (int argc, char *argv[ ])
 }
 
 void run(){
-	MainMemory mem(MEM_CAPACITY);
+	MainMemory mem;
 	
 	int read_write;
 	int address;
@@ -80,23 +78,22 @@ void run(){
 
 		// check again if we have reached the end
 		// as this flag is set only after a 'cin'
-		if(feof(stdin)) return;
+		if(feof(stdin)) break;
 
 		cin >> hex >> address;
 
 		//if it is a cache write, then we have to read the data
 		if(read_write == CACHE_WRITE){
 		  	cin >> hex >> data;
-			cout << "Writing " << data << "to cache then mem." << endl;
+			cout << "Writing data: " << data << " to cache then mem!" << endl;
 			mem.set_content(address, data);		//write to memory
 			
+		}else{
+			cout << "Reading address: " << address << " from cache." << endl;
 		}
-		else
-		{
-			cout << "Reading address" << address << "from cache." << endl;
-		}
-
 	}
 	
-	mem.print_contents(13, 24, HEX);		// print contents of main memory
+	if(DEBUG) cout << "While loop terminated." << endl;
+	
+	mem.print_contents(STARTING_ADDRESS, STARTING_ADDRESS + MEM_CAPACITY, HEX);		// print entire contents of main memory
 }

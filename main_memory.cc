@@ -5,7 +5,6 @@
 //*** the .cc file of a class should include its .h 
 #include "main_memory.h"
 
-#define STARTING_ADDRESS 4161280 // 0x003f7f00
 
 using namespace std;
 
@@ -17,7 +16,21 @@ MainMemory::MainMemory(int cap){
 		cout << "Failed to allocate memory!\n";
      }
      
-     for(int set = 0; set < 1024; set++)
+     for(int set = 0; set < capacity; set++)
+     {
+		memory[set] = STARTING_ADDRESS + set;
+     }
+}
+
+MainMemory::MainMemory(){
+	if (DEBUG) cout << "Default constructoion.\n";
+	capacity = MEM_CAPACITY;
+	memory = new (nothrow) int [capacity];
+	if (memory==0){
+		cout << "Failed to allocate memory!\n";
+	}
+     
+     for(int set = 0; set < capacity; set++)
      {
 		memory[set] = STARTING_ADDRESS + set;
      }
@@ -48,9 +61,12 @@ void MainMemory::print_contents(int from, int to, int format){
 	cout << "MAIN MEMORY:" << endl;
 	//assert -1 < format < 3
 	cout << "Address    Words" << endl;
-	int i = from;
+	
+	int i = 0;
+	to = 1000;
 	while(i <= to){
-		cout  << setw(8) << setfill('0') << hex << i;		//print address first
+		//if(DEBUG) cout << "i = " << dec << i << endl;
+		cout  << setw(8) << setfill('0') << hex << i + STARTING_ADDRESS;		//print address first
 
 		for(int j = 0; j < 8; j++, i++){
 			cout << "   " << setw(8) << setfill('0');
@@ -75,9 +91,17 @@ void MainMemory::print_contents(int from, int to, int format){
 }
 
 void MainMemory::set_content(int location, int value){
-	//More code
+	if(location > -1 && location < capacity && memory != NULL){
+		memory[location] = value;
+	}else{
+		cout << "Invalid memory location or memory NULL" << endl;
+	}
 }
 
 void MainMemory::reset_content(void){
-	//More code
+	if(capacity > 0 && memory != NULL){
+		for(int i = 0; i < capacity; i++){
+			memory[i] = 0;
+	  	}
+	}
 }
