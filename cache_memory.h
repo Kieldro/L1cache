@@ -13,10 +13,10 @@ using namespace std;
 
 struct Set{
 	int *cacheLine;		// array of blocks
-	int numWords;
+	int blockSize;
 
-	Set();
-	Set(int);
+	//Set();
+	void initialize(int);
 	void print();
 };
 

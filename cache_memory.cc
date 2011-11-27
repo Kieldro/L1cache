@@ -32,9 +32,9 @@ CacheMemory::CacheMemory(MainMemory m, int a, int b, int c){
 
 	// construct array of sets
 	sets = new Set [numSets];
-	for(int i = 0; i < numSets; ++i)
-		(sets + i) = &Set(blockSize);
-	if(DEBUG) cout << "set[0]: " << sets[0].numWords << " words" << endl;
+	for(int i = 0; i < numSets; ++i)		// initialize each set
+		sets[i].initialize(blockSize);
+	if(DEBUG) cout << "set[0]: " << sets[0].blockSize << " words" << endl;
 
 	// initialize dirty bits
 	dirty = new bool [capacity];
@@ -123,21 +123,18 @@ Set   V    Tag    Dirty    Word0      Word1      Word2      Word3      Word4    
 */	
 }
 
-Set::Set(){
-	//if(DEBUG) cout << "Set default constructed" << endl;
-	
-}
+//Set::Set(){//if(DEBUG) cout << "Set default constructed" << endl;}
 
-Set::Set(int numWords){
-	numWords = numWords;
-	cacheLine = new int [numWords];
+void Set::initialize(int numWords){
+	blockSize = numWords;
+	cacheLine = new int [blockSize];
 	//if(DEBUG) cout << "set properly constructed." << endl;
 	
 }
 
 void Set::print(){
 	cout << "Set:" << endl;
-	for(int i = 0; i < numWords; ++i)
+	for(int i = 0; i < blockSize; ++i)
 		cout << cacheLine[i] << endl;
 	
 	

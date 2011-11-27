@@ -1,12 +1,13 @@
 /*
 Ian Buitrago
 Miguel Diaz
+11-30-11
 
 notes:
 run with
 make ; ./cache_sim -c8 -b16 -a4 < input_trace.txt
 
-16 MB ==  16 * 1048576 bytes || 16 *1000000 bytes?
+16 MiB ==  16 * 2^20 bytes
 */
 
 #include <iostream>
@@ -36,7 +37,8 @@ int main (int argc, char *argv[ ])
 	int cache_capacity = 0;
 	int cache_blocksize = 0;
 	int cache_associativity = 0;
-	
+
+	// sets params and checks format
 	if(!parseParams(argc, argv, cache_capacity, cache_blocksize, cache_associativity) ) {
 		exit (2);
 	}
@@ -65,7 +67,8 @@ int main (int argc, char *argv[ ])
 	
 	MainMemory mem;
 	CacheMemory cache(mem, cache_associativity, cache_blocksize, cache_capacity);
-	
+
+	// Input
 	int read_write;
 	int address;
 	unsigned int data;
