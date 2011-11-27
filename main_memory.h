@@ -4,7 +4,7 @@
 #define HEX 0
 #define DEC 1
 #define OCT 2
-#define STARTING_ADDRESS 4161280 // 0x003f7f00
+#define STARTING_ADDRESS 0x003f7f00
 #define DEBUG true
 
 #include<iostream>

@@ -4,8 +4,8 @@ Miguel Diaz
 11-30-11
 
 notes:
-run with
-make ; ./cache_sim -c8 -b16 -a4 < input_trace.txt
+run with:
+make ; ./cache_sim -c8 -b16 -a4 < input_trace.txt ; make clean
 
 16 MiB ==  16 * 2^20 bytes
 */
@@ -25,7 +25,7 @@ make ; ./cache_sim -c8 -b16 -a4 < input_trace.txt
 
 using namespace std;
 
-void run();
+void run(CacheMemory cache);
 
 int main (int argc, char *argv[ ])
 {
@@ -62,11 +62,19 @@ int main (int argc, char *argv[ ])
 	// 1, 2, 4, 8, 16. 
 	assert(assocLog == int(assocLog) );		// assert power of 2
 	assert(cache_associativity >= 1 || cache_associativity <= 16);
-	
-	run();
-	
+
+
+	// initialite cache and main memory
 	MainMemory mem;
 	CacheMemory cache(mem, cache_associativity, cache_blocksize, cache_capacity);
+	
+	run(cache);
+	
+	return 0;
+}
+
+void run(CacheMemory cache){
+	if(DEBUG) cout << "SHAZAM!\n";
 
 	// Input
 	int read_write;
@@ -88,7 +96,7 @@ int main (int argc, char *argv[ ])
 		if(read_write == CACHE_WRITE){
 		  	cin >> hex >> data;
 			if(DEBUG) cout << "Write: memory[" << hex << address << "] = " << data << endl;
-			mem.set_content(address, data);		//write to memory	
+			cache.mem->set_content(address, data);		//write to memory	
 		}else{		//read
 			if(DEBUG) cout << "Read memory[" << hex << address << "]: " << cache.read(address) << endl;
 		}
@@ -97,12 +105,4 @@ int main (int argc, char *argv[ ])
 	//cache.print_contents();
 	
 	//mem.print_contents(STARTING_ADDRESS, STARTING_ADDRESS + 1023, HEX);
-	
-	run();
-	
-	return 0;
-}
-
-void run(){
-		if(DEBUG) cout << "SHAZAM!\n";
 }

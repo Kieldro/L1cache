@@ -22,7 +22,6 @@ struct Set{
 
 class CacheMemory{
 	private:
-		MainMemory *mem;
 		int *memory;
 		Set *sets;
 		bool *valid;
@@ -32,12 +31,16 @@ class CacheMemory{
 		int capacity;
 		int blockSize;
 		int associativity;
+		float setBits;
+		float wordOffsetBits;
+		int tagBits;
 		int hits;
 		int misses;
 		int reads;
 		int writes;
 		int evicted;
 	public: 
+		MainMemory *mem;
 		CacheMemory(MainMemory, int a, int bsize, int c);
 		~CacheMemory();
 		void print_contents();

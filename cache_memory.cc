@@ -23,9 +23,9 @@ CacheMemory::CacheMemory(MainMemory m, int a, int b, int c){
 	if(DEBUG) cout << "cache capacity: " << capacity << " words" << endl;
 	if(DEBUG) cout << "block size: " << blockSize << " words" << endl;
 	if(DEBUG) cout << "number of sets: " << numSets << " sets" << endl;
-	float setBits = log(numSets)/log(2);
-	float wordOffsetBits = log(blockSize)/log(2);
-	int tagBits = 32 - setBits - wordOffsetBits;
+	setBits = log(numSets)/log(2);
+	wordOffsetBits = log(blockSize)/log(2);
+	tagBits = 32 - setBits - wordOffsetBits;
 	if(DEBUG) cout << "bits for set index: " << setBits << " bits" << endl;
 	if(DEBUG) cout << "bits for word index: " << wordOffsetBits << " bits" << endl;
 	if(DEBUG) cout << "bits for tag: " << tagBits << " bits" << endl;
@@ -64,6 +64,10 @@ void CacheMemory::set_content(int location, int value){
 }
 
 int CacheMemory::read(int address){
+	unsigned word;
+	unsigned set;
+	unsigned tag;
+	
 	++reads;
 	//if(DEBUG) cout << "SHAZAM!" << endl;
 	return memory[0];
