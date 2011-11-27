@@ -34,6 +34,9 @@ class CacheMemory{
 		float setBits;
 		float wordOffsetBits;
 		int tagBits;
+		unsigned wMask;
+		unsigned sMask;
+		unsigned tMask;
 		int hits;
 		int misses;
 		int reads;
@@ -45,7 +48,7 @@ class CacheMemory{
 		~CacheMemory();
 		void print_contents();
 		void set_content(int location, int value);
-		int read(int address);
+		int read(unsigned address);
 		void reset_content(void);
 };
 #endif

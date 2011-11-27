@@ -74,7 +74,6 @@ int main (int argc, char *argv[ ])
 }
 
 void run(CacheMemory cache){
-	if(DEBUG) cout << "SHAZAM!\n";
 
 	// Input
 	int read_write;
@@ -96,6 +95,7 @@ void run(CacheMemory cache){
 		if(read_write == CACHE_WRITE){
 		  	cin >> hex >> data;
 			if(DEBUG) cout << "Write: memory[" << hex << address << "] = " << data << endl;
+//	if(DEBUG) cout << "SHAZAM!\n";
 			cache.mem->set_content(address, data);		//write to memory	
 		}else{		//read
 			if(DEBUG) cout << "Read memory[" << hex << address << "]: " << cache.read(address) << endl;

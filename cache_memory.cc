@@ -30,6 +30,15 @@ CacheMemory::CacheMemory(MainMemory m, int a, int b, int c){
 	if(DEBUG) cout << "bits for word index: " << wordOffsetBits << " bits" << endl;
 	if(DEBUG) cout << "bits for tag: " << tagBits << " bits" << endl;
 
+	// parse the address bit fields
+	wMask = ( 1 << (int)wordOffsetBits ) - 1;
+	sMask = (( 1 << (int)setBits ) - 1) << (int)wordOffsetBits;
+	tMask = (( 1 << tagBits ) - 1) << (32 - tagBits);
+	
+	if(DEBUG) cout << "word mask: 0x" << hex << wMask << "" << endl;
+	if(DEBUG) cout << "set mask: 0x" << sMask << "" << endl;
+	if(DEBUG) cout << "tag mask: 0x" << tMask << "" << endl;
+
 	// construct array of sets
 	sets = new Set [numSets];
 	for(int i = 0; i < numSets; ++i)		// initialize each set
@@ -63,10 +72,20 @@ void CacheMemory::set_content(int location, int value){
 	++writes;
 }
 
-int CacheMemory::read(int address){
-	unsigned word;
+int CacheMemory::read(unsigned address){
+
+	
+	unsigned wordIdx;
 	unsigned set;
 	unsigned tag;
+	
+	wordIdx = address & wMask;
+	set = (address & sMask) >> (int)wordOffsetBits;
+	tag = (address & tMask) >> (32 - tagBits);
+	
+	if(DEBUG) cout << "wordIdx: " << wordIdx << "" << endl;
+	if(DEBUG) cout << "set: " << set << "" << endl;
+	if(DEBUG) cout << "tag: 0x" << hex << tag << "" << endl;
 	
 	++reads;
 	//if(DEBUG) cout << "SHAZAM!" << endl;
