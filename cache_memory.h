@@ -5,23 +5,32 @@
 #define DEC 1
 #define OCT 2
 
-#include<iostream>
+#include <iostream>
 #include <iomanip>
 #include "main_memory.h"
 
 using namespace std;
 
+struct Set{
+	int *cacheLine;		// array of blocks
+	int numWords;
+
+	Set();
+	Set(int);
+	void print();
+};
+
 class CacheMemory{
 	private:
 		MainMemory *mem;
 		int *memory;
-		int set;
+		Set *sets;
 		bool *valid;
 		int *tag;
 		bool *dirty;
 		int *data;
 		int capacity;
-		int blocksize;
+		int blockSize;
 		int associativity;
 		int hits;
 		int misses;
@@ -31,8 +40,9 @@ class CacheMemory{
 	public: 
 		CacheMemory(MainMemory, int a, int bsize, int c);
 		~CacheMemory();
-		void print_contents(int from, int to, int format);
+		void print_contents();
 		void set_content(int location, int value);
+		int read(int address);
 		void reset_content(void);
 };
 #endif

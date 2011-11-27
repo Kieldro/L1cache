@@ -55,9 +55,9 @@ int main (int argc, char *argv[ ])
 		|| cache_associativity == 4 || cache_associativity == 8
 		|| cache_associativity == 16);
 	
-	cout << "Cache Capacity: " << cache_capacity << endl;
-	cout << "Cache BlockSize: " << cache_blocksize << endl;
-	cout << "Cache Associativity: " << cache_associativity << endl;
+	cout << "Cache Capacity: " << cache_capacity << " KiB" << endl;
+	cout << "Cache BlockSize: " << cache_blocksize << " Bytes" << endl;
+	cout << "Cache Associativity: " << cache_associativity << " blocks per set" << endl;
 	
 	run();
 	
@@ -72,27 +72,24 @@ int main (int argc, char *argv[ ])
 	while(!feof(stdin)){
 	  	//read in whether to read or write to the cache
 		cin >> dec >> read_write;
-
+		
 		// check again if we have reached the end
 		// as this flag is set only after a 'cin'
 		if(feof(stdin)) break;
-
+		
 		cin >> hex >> address;
 
 		//if it is a cache write, then we have to read the data
 		if(read_write == CACHE_WRITE){
 		  	cin >> hex >> data;
-			cout << "Writing data: " << data << " to cache then mem!" << endl;
-			mem.set_content(address, data);		//write to memory
-			
+			if(DEBUG) cout << "Write: memory[" << address << "] = " << data << endl;
+			mem.set_content(address, data);		//write to memory	
 		}else{		//read
-			cout << "Reading address: " << address << " from cache." << endl;
+			if(DEBUG) cout << "Read memory[" << address << "]: " << cache.read(address) << endl;
 		}
 	}
 	
-	if(DEBUG) cout << "While loop terminated." << endl;
-
-	cache.print_contents(0, 100, HEX);
+	//cache.print_contents();
 	
 	//mem.print_contents(STARTING_ADDRESS, STARTING_ADDRESS + 1023, HEX);
 	
