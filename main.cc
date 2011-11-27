@@ -14,6 +14,7 @@ make ; ./cache_sim -c8 -b16 -a4 < input_trace.txt
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
+#include <math.h>
 #include "funcs.h"
 #include "main_memory.h"
 #include "cache_memory.h"
@@ -40,24 +41,25 @@ int main (int argc, char *argv[ ])
 		exit (2);
 	}
 	
-	// -c <capacity> with <capacity> in KB: 4, 8, 16, 32, or 64. 
-	assert(cache_capacity == 4 || cache_capacity == 8 || cache_capacity == 16
-		|| cache_capacity == 32 || cache_capacity == 64); 
-	// -b <blocksize> with <blocksize> in bytes:
-	//  4, 8, 16, 32, 64, 128, 256, or 512. 
-	assert(cache_blocksize == 4 || cache_blocksize == 8 || cache_blocksize == 16
-		|| cache_blocksize == 32 || cache_blocksize == 64 
-		|| cache_blocksize == 128 || cache_blocksize == 256
-		|| cache_blocksize == 512); 
-	// -a <associativity> where <associativity> is integer size of set:
-	// 1, 2, 4, 8, 16. 
-	assert(cache_associativity == 1 || cache_associativity == 2
-		|| cache_associativity == 4 || cache_associativity == 8
-		|| cache_associativity == 16);
-	
 	cout << "Cache Capacity: " << cache_capacity << " KiB" << endl;
 	cout << "Cache BlockSize: " << cache_blocksize << " Bytes" << endl;
 	cout << "Cache Associativity: " << cache_associativity << " blocks per set" << endl;
+
+	// check if commandline parameters are valid
+	float capLog = log(cache_capacity)/log(2);
+	float blockLog = log(cache_blocksize)/log(2);
+	float assocLog = log(cache_associativity)/log(2);
+	// -c <capacity> with <capacity> in KiB: 4, 8, 16, 32, or 64.
+	assert(capLog == int(capLog) );		// assert power of 2
+	assert(cache_capacity >= 4 || cache_capacity <= 64);
+	// -b <blocksize> with <blocksize> in bytes:
+	//  4, 8, 16, 32, 64, 128, 256, or 512.
+	assert(blockLog == int(blockLog) );		// assert power of 2
+	assert(cache_blocksize >= 4 || cache_blocksize <= 512);
+	// -a <associativity> where <associativity> is integer size of set:
+	// 1, 2, 4, 8, 16. 
+	assert(assocLog == int(assocLog) );		// assert power of 2
+	assert(cache_associativity >= 1 || cache_associativity <= 16);
 	
 	run();
 	
@@ -82,10 +84,10 @@ int main (int argc, char *argv[ ])
 		//if it is a cache write, then we have to read the data
 		if(read_write == CACHE_WRITE){
 		  	cin >> hex >> data;
-			if(DEBUG) cout << "Write: memory[" << address << "] = " << data << endl;
+			if(DEBUG) cout << "Write: memory[" << hex << address << "] = " << data << endl;
 			mem.set_content(address, data);		//write to memory	
 		}else{		//read
-			if(DEBUG) cout << "Read memory[" << address << "]: " << cache.read(address) << endl;
+			if(DEBUG) cout << "Read memory[" << hex << address << "]: " << cache.read(address) << endl;
 		}
 	}
 	
@@ -93,8 +95,11 @@ int main (int argc, char *argv[ ])
 	
 	//mem.print_contents(STARTING_ADDRESS, STARTING_ADDRESS + 1023, HEX);
 	
+	run();
+	
 	return 0;
 }
 
 void run(){
+		if(DEBUG) cout << "SHAZAM!\n";
 }

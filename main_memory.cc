@@ -13,7 +13,7 @@ using namespace std;
 
 MainMemory::MainMemory(){
 	if (DEBUG) cout << "main mem default construction.\n";
-	capacity = 16 * pow(2, 20)  / 4;	// 16 MB in 32 bit words
+	capacity = 16 * pow(2, 20)  / 4;	// 16 MiB to 32 bit words
 	memory = new (nothrow) int [capacity];
 	if (DEBUG) cout << "main mem capacity: " << capacity << " words" << endl;
 	if (memory==0){

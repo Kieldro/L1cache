@@ -11,7 +11,7 @@
 using namespace std;
 
 CacheMemory::CacheMemory(MainMemory m, int a, int b, int c){
-	capacity = c * pow(2, 10) / 4;		// convert KB to words
+	capacity = c * pow(2, 10) / 4;		// convert KiB to words
 	mem = &m;		//link to a MainMemory object
 	associativity = a;
 	blockSize = b / 4;		// convert from bytes to words
@@ -25,21 +25,22 @@ CacheMemory::CacheMemory(MainMemory m, int a, int b, int c){
 	if(DEBUG) cout << "number of sets: " << numSets << " sets" << endl;
 	float setBits = log(numSets)/log(2);
 	float wordOffsetBits = log(blockSize)/log(2);
+	int tagBits = 32 - setBits - wordOffsetBits;
 	if(DEBUG) cout << "bits for set index: " << setBits << " bits" << endl;
 	if(DEBUG) cout << "bits for word index: " << wordOffsetBits << " bits" << endl;
-	if(DEBUG) cout << "bits for tag: " << 32 - setBits - wordOffsetBits << " bits" << endl;
+	if(DEBUG) cout << "bits for tag: " << tagBits << " bits" << endl;
 
+	// construct array of sets
 	sets = new Set [numSets];
 	for(int i = 0; i < numSets; ++i)
-		sets[i] = Set(blockSize);
-
+		(sets + i) = &Set(blockSize);
+	if(DEBUG) cout << "set[0]: " << sets[0].numWords << " words" << endl;
 
 	// initialize dirty bits
 	dirty = new bool [capacity];
 	valid = new bool [capacity];
 	for(int i = 0; i < capacity; ++i){
 		valid [i] = dirty[i] = 0;
-		
 	}
 	memory = new (nothrow) int [capacity];	// words
 	if (memory==0){
@@ -130,6 +131,7 @@ Set::Set(){
 Set::Set(int numWords){
 	numWords = numWords;
 	cacheLine = new int [numWords];
+	//if(DEBUG) cout << "set properly constructed." << endl;
 	
 }
 
