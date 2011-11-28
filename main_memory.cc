@@ -40,11 +40,13 @@ int MainMemory::read (int address){
 	}
 }
 
-void MainMemory::set_content(int address, int data){
+bool MainMemory::write(int address, int data){
 	if(address > -1 && address < capacity && memory != NULL){
 		memory[address] = data;
+		return true;		// successful
 	}else{
 		cout << "Invalid memory location or memory NULL" << endl;
+		return false;
 	}
 }
 

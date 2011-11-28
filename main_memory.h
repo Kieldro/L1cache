@@ -19,7 +19,7 @@ class MainMemory{
 		MainMemory();
 		~MainMemory();
 		int read(int address);
-		void set_content(int address, int data);
+		bool write(int address, int data);
 		void reset_content(void);
 		void print_contents();
 };

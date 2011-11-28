@@ -85,9 +85,11 @@ int CacheMemory::read (unsigned address){
 	//if(DEBUG) cout << "SHAZAM!" << endl;
 
 	//data = sets[set].read(tag, wordIdx);
+	++hits;
 	/*if(!inCache){
 		data = mem.read(address);
 		//Store(data) according to LRU
+		++misses;
 	}
 	*/
 	++reads;
