@@ -10,9 +10,10 @@
 
 using namespace std;
 
+// CacheMemory method definitions
 CacheMemory::CacheMemory(MainMemory m, int a, int b, int c){
 	capacity = c * pow(2, 10) / 4;		// convert KiB to words
-	mem = &m;		//link to a MainMemory object
+	mem = &m;		// link to a MainMemory object
 	associativity = a;
 	blockSize = b / 4;		// convert from bytes to words
 	//int totalBlocks = capacity;
@@ -45,12 +46,6 @@ CacheMemory::CacheMemory(MainMemory m, int a, int b, int c){
 		sets[i].initialize(blockSize);
 	if(DEBUG) cout << "set[0]: " << sets[0].blockSize << " words" << endl;
 
-	// initialize dirty bits
-	dirty = new bool [capacity];
-	valid = new bool [capacity];
-	for(int i = 0; i < capacity; ++i){
-		valid [i] = dirty[i] = 0;
-	}
 	memory = new (nothrow) int [capacity];	// words
 	if (memory==0){
 		cout << "Failed to allocate memory!\n";
@@ -65,19 +60,19 @@ CacheMemory::CacheMemory(MainMemory m, int a, int b, int c){
 CacheMemory::~CacheMemory(){
     if(memory != NULL){
 		delete [] memory;
-    } 
+    }
+    delete [] sets;
 }
 
-void CacheMemory::set_content(int location, int value){
+void CacheMemory::write (unsigned address, int data){
 	++writes;
 }
 
-int CacheMemory::read(unsigned address){
-
-	
+int CacheMemory::read (unsigned address){
 	unsigned wordIdx;
 	unsigned set;
 	unsigned tag;
+	int data = -1;
 	
 	wordIdx = address & wMask;
 	set = (address & sMask) >> (int)wordOffsetBits;
@@ -87,9 +82,16 @@ int CacheMemory::read(unsigned address){
 	if(DEBUG) cout << "set: " << set << "" << endl;
 	if(DEBUG) cout << "tag: 0x" << hex << tag << "" << endl;
 	
-	++reads;
 	//if(DEBUG) cout << "SHAZAM!" << endl;
-	return memory[0];
+
+	//data = sets[set].read(tag, wordIdx);
+	/*if(!inCache){
+		data = mem.read(address);
+		//Store(data) according to LRU
+	}
+	*/
+	++reads;
+	return data;
 	
 }
 
@@ -146,19 +148,26 @@ Set   V    Tag    Dirty    Word0      Word1      Word2      Word3      Word4    
 */	
 }
 
+// Set methods
 //Set::Set(){//if(DEBUG) cout << "Set default constructed" << endl;}
 
 void Set::initialize(int numWords){
 	blockSize = numWords;
-	cacheLine = new int [blockSize];
+	line = new cacheLine [blockSize];		// cacheLine constrcutor initializes the valid/dirty bits
 	//if(DEBUG) cout << "set properly constructed." << endl;
 	
 }
 
+int Set::read(unsigned tag, unsigned wordIdx){
+	for(int i = 0; i < blockSize; ++i)
+		if(line[i].tag == tag && line[i].valid && !line[i].dirty)		//dirty??
+			return line[i].word[wordIdx];		// requested word found
+	
+	return 0;		// word not found
+}
+
 void Set::print(){
 	cout << "Set:" << endl;
-	for(int i = 0; i < blockSize; ++i)
-		cout << cacheLine[i] << endl;
-	
-	
+	//for(int i = 0; i < blockSize; ++i)
+	//	cout << line[0].print() << endl;
 }	

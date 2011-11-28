@@ -2,12 +2,16 @@
 Ian Buitrago
 Miguel Diaz
 11-30-11
+CS 352
+
+Simulates and L1 cache
 
 notes:
 run with:
 make ; ./cache_sim -c8 -b16 -a4 < input_trace.txt ; make clean
 
 16 MiB ==  16 * 2^20 bytes
+newest UML diagram at: http://www.gliffy.com/pubdoc/3102540/L.png
 */
 
 #include <iostream>
@@ -53,15 +57,15 @@ int main (int argc, char *argv[ ])
 	float assocLog = log(cache_associativity)/log(2);
 	// -c <capacity> with <capacity> in KiB: 4, 8, 16, 32, or 64.
 	assert(capLog == int(capLog) );		// assert power of 2
-	assert(cache_capacity >= 4 || cache_capacity <= 64);
+	assert(cache_capacity >= 4 && cache_capacity <= 64);
 	// -b <blocksize> with <blocksize> in bytes:
 	//  4, 8, 16, 32, 64, 128, 256, or 512.
 	assert(blockLog == int(blockLog) );		// assert power of 2
-	assert(cache_blocksize >= 4 || cache_blocksize <= 512);
+	assert(cache_blocksize >= 4 && cache_blocksize <= 512);
 	// -a <associativity> where <associativity> is integer size of set:
 	// 1, 2, 4, 8, 16. 
 	assert(assocLog == int(assocLog) );		// assert power of 2
-	assert(cache_associativity >= 1 || cache_associativity <= 16);
+	assert(cache_associativity >= 1 && cache_associativity <= 16);
 
 
 	// initialite cache and main memory
@@ -79,7 +83,7 @@ void run(CacheMemory cache){
 	int read_write;
 	int address;
 	unsigned int data;
-	if(DEBUG) cout << "beginning input." << endl;
+	if(DEBUG) cout << "Begin input:" << endl;
 	// repeat till we reach the end of the input	
 	while(!feof(stdin)){
 	  	//read in whether to read or write to the cache
@@ -95,12 +99,13 @@ void run(CacheMemory cache){
 		if(read_write == CACHE_WRITE){
 		  	cin >> hex >> data;
 			if(DEBUG) cout << "Write: memory[" << hex << address << "] = " << data << endl;
-//	if(DEBUG) cout << "SHAZAM!\n";
+
 			cache.mem->set_content(address, data);		//write to memory	
 		}else{		//read
 			if(DEBUG) cout << "Read memory[" << hex << address << "]: " << cache.read(address) << endl;
 		}
 	}
+	if(DEBUG) cout << "End of input.\n";
 	
 	//cache.print_contents();
 	

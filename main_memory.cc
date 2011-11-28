@@ -32,6 +32,30 @@ MainMemory::~MainMemory(){
     } 
 }
 
+int MainMemory::read (int address){
+	if(address > -1 && address < capacity && memory != NULL){
+		return memory[address];
+	}else{
+		cout << "Invalid memory location or memory NULL" << endl;
+	}
+}
+
+void MainMemory::set_content(int address, int data){
+	if(address > -1 && address < capacity && memory != NULL){
+		memory[address] = data;
+	}else{
+		cout << "Invalid memory location or memory NULL" << endl;
+	}
+}
+
+void MainMemory::reset_content(void){
+	if(capacity > 0 && memory != NULL){
+		for(int i = 0; i < capacity; i++){
+			memory[i] = 0;
+	  	}
+	}
+}
+
 void MainMemory::print_contents(){
 	cout << "MAIN MEMORY:" << endl;
 	//assert -1 < format < 3
@@ -62,21 +86,5 @@ void MainMemory::print_contents(){
 			 cout << memory[i];
 		}
 		cout  << endl;         
-	}
-}
-
-void MainMemory::set_content(int location, int value){
-	if(location > -1 && location < capacity && memory != NULL){
-		memory[location] = value;
-	}else{
-		cout << "Invalid memory location or memory NULL" << endl;
-	}
-}
-
-void MainMemory::reset_content(void){
-	if(capacity > 0 && memory != NULL){
-		for(int i = 0; i < capacity; i++){
-			memory[i] = 0;
-	  	}
 	}
 }

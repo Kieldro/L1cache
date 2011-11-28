@@ -17,11 +17,11 @@ class MainMemory{
 		int capacity;
 	public: 
 		MainMemory();
-		MainMemory(int capacity);
 		~MainMemory();
-		void print_contents();
-		void set_content(int location, int value);
+		int read(int address);
+		void set_content(int address, int data);
 		void reset_content(void);
+		void print_contents();
 };
 
 #endif

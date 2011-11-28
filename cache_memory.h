@@ -11,12 +11,22 @@
 
 using namespace std;
 
+
+struct cacheLine{
+	unsigned tag;
+	bool valid;
+	bool dirty;
+	int *word;
+	cacheLine(){valid = dirty = 0;}
+};
+
 struct Set{
-	int *cacheLine;		// array of blocks
+	cacheLine *line;
 	int blockSize;
 
 	//Set();
 	void initialize(int);
+	int read(unsigned tag, unsigned wordIdx);
 	void print();
 };
 
@@ -24,10 +34,6 @@ class CacheMemory{
 	private:
 		int *memory;
 		Set *sets;
-		bool *valid;
-		int *tag;
-		bool *dirty;
-		int *data;
 		int capacity;
 		int blockSize;
 		int associativity;
@@ -47,7 +53,7 @@ class CacheMemory{
 		CacheMemory(MainMemory, int a, int bsize, int c);
 		~CacheMemory();
 		void print_contents();
-		void set_content(int location, int value);
+		void write(unsigned address, int data);
 		int read(unsigned address);
 		void reset_content(void);
 };
