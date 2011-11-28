@@ -100,7 +100,7 @@ void run(CacheMemory cache){
 		  	cin >> hex >> data;
 			if(DEBUG) cout << "Write: memory[" << hex << address << "] = " << data << endl;
 
-			cache.mem->set_content(address, data);		//write to memory	
+			cache.mem->write(address, data);		//write to memory	
 		}else{		//read
 			if(DEBUG) cout << "Read memory[" << hex << address << "]: " << cache.read(address) << endl;
 		}
