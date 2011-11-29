@@ -12,9 +12,11 @@ using namespace std;
 
 int Set::associativity = 0;
 int Set::blockSize = 0;
+int CacheLine::blockSize = 0;
 
 // CacheMemory method definitions
 CacheMemory::CacheMemory(int assoc, int bSize, int cap){
+	if(DEBUG) cout << "CONSTRUCTING CacheMemory obj: " << this << endl;
 	capacity = cap * pow(2, 10) / 4;		// convert KiB to words
 	mem = new MainMemory;		// fixed segfault
 	associativity = assoc;
@@ -35,8 +37,8 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	if(DEBUG) cout << "bits for tag: " << tagBits << " bits" << endl;
 
 	// build masks
-	wMask = ( 1 << (int)wordOffsetBits ) - 1;
-	sMask = (( 1 << (int)setBits ) - 1) << (int)wordOffsetBits;
+	wMask = ( 1 << wordOffsetBits ) - 1;
+	sMask = (( 1 << setBits ) - 1) << wordOffsetBits;
 	tMask = (( 1 << tagBits ) - 1) << (32 - tagBits);
 	
 	if(DEBUG) cout << "word mask: 0x" << hex << wMask << "" << endl;
@@ -48,10 +50,7 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	Set::blockSize = blockSize;
 	sets = new Set [numSets];
 	
-	//int Set::blockSize = blockSize;
-	
 	if(DEBUG) cout << "set[0]: " << sets[0].associativity << " cacheLines" << endl;
-	if(DEBUG) cout << "set[0].blockSize: " << sets[0].blockSize << " words" << endl;
 }
 
 //*** destructor
@@ -61,36 +60,43 @@ CacheMemory::~CacheMemory(){
     }
 }
 
-void CacheMemory::write (unsigned address, int data){
-	unsigned wordIdx;
-	unsigned set;
-	unsigned tag;
-	
-	parseAddress(address, wordIdx, set, tag);		// parameters passed by reference
-	
-	//sets.write();
-
-	++writes;
-}
-
 int CacheMemory::read (unsigned address){
 	unsigned wordIdx;
 	unsigned set;
 	unsigned tag;
+	bool found = false;
 	int data = -1;
 	
 	parseAddress(address, wordIdx, set, tag);		// parameters passed by reference
 
-	//data = sets[set].read(tag, wordIdx);
-	++hits;
-	/*if(!inCache){
-		data = mem.read(address);
-		//Store(data) according to LRU
+	data = sets[set].read(tag, wordIdx, found);		// found passed by ref
+	if(found)
+		++hits;
+	else{
+		data = mem->read(address);
+		//CacheMemory.store(data) according to LRU
 		++misses;
 	}
-	*/
 	++reads;
+	
 	return data;
+}
+
+void CacheMemory::write (unsigned address, int data){
+	unsigned wordIdx;
+	unsigned set;
+	unsigned tag;
+	bool found = false;
+	
+	parseAddress(address, wordIdx, set, tag);		// parameters passed by reference
+	
+	sets[set].write(data, tag, wordIdx, found);
+	
+	if(!found)
+		//sets[set].line[] = data;		// write in whole block??
+		;
+	
+	++writes;
 }
 
 // parse out the tag, set and word offset from the address
@@ -98,14 +104,15 @@ void CacheMemory::parseAddress (const unsigned address, unsigned &wordIdx, unsig
 	wordIdx = address & wMask;
 	set = (address & sMask) >> (int)wordOffsetBits;
 	tag = (address & tMask) >> (32 - tagBits);
-	
+	/*
 	if(DEBUG) cout << "wordIdx: " << wordIdx << "" << endl;
 	if(DEBUG) cout << "set: " << set << "" << endl;
 	if(DEBUG) cout << "tag: 0x" << hex << tag << "" << endl;
+	*/
 }
 
 void CacheMemory::print(){
-/*	cout << "STATISTICS:" << endl;
+	cout << "STATISTICS:" << endl;
 	cout << "Misses:" << endl;
 	cout << "Total: " << misses;
 	cout << " DataReads: " << reads;
@@ -115,36 +122,26 @@ void CacheMemory::print(){
 	cout << " DataReads: " << reads;
 	cout << " DataWrites: " << writes << endl;
 	cout << "Number of Dirty Blocks Evicted From the Cache: " << evicted << endl;
-*/	
+	
 	cout << "CACHE MEMORY:" << endl;
 	//assert -1 < format < 3
-	cout << "Set    V   Tag   Dirty   Word" << endl;
-	int i = 0;
-	int to = capacity-1;
-	while(i <= to){
-//		cout << 9 << valid[i] << 0 << dirty[i] << " ";
-		cout << setw(8) << setfill('0') << hex << i;		//print address first
+	cout << "Set   V    Tag    Dirty    ";
+	for(int i=0; i<8; ++i) cout << "Word" << i << "      ";
+	
+	cout << endl;
+	for(int i = 0; i < capacity; ){		// print entire cache
+		cout << 69 << "     " << sets[0].line[0].valid << "   "
+			 << setw(8) << setfill('0')<< hex << sets[0].line[0].tag << "    "
+			 << sets[0].line[0].valid << " ";		// broken; valid AND dirty??
 		//print words
-		for(int j = 0; j < 8; j++, i++){
-			cout << "   " << setw(8) << setfill('0');
-			switch(HEX){
-				case HEX:
-					cout << hex;
-					break;
-				case DEC:
-					cout << dec ;
-					break;
-				case OCT:
-					cout << oct;
-					break;
-				default:
-					cout << "Invalid format";
-					i = to + 1;		//break loop
-			}
-			 cout << mem->read(i);
+		for(int j = 0; j < 8; ++j, ++i){
+			cout << "   " << setw(8) << setfill('0') << read(i);
 		}
 		cout  << endl;          
 	}
+	
+	//print mem
+	//mem->print();
 	/*
 Set   V    Tag    Dirty    Word0      Word1      Word2      Word3      Word4      Word5      Word6      Word7   
 0     1   00003fe8    0    003fe800   003fe801   003fe802   003fe803   003fe804   003fe805   003fe806   003fe807   
@@ -154,17 +151,29 @@ Set   V    Tag    Dirty    Word0      Word1      Word2      Word3      Word4    
 
 // Set methods
 Set::Set(){
-	line = new cacheLine [associativity];		// cacheLines per set (associativity)
-	for(int i = 0; i < associativity; ++i)		// initialize each cacheLine
-		line[i].word = new int [blockSize];
+	CacheLine::blockSize = blockSize;
+	line = new CacheLine [associativity];		// CacheLines per set (associativity)
 }
 
-int Set::read(unsigned tag, unsigned wordIdx){
+int Set::read(unsigned tag, unsigned wordIdx, bool &found){
 	for(int i = 0; i < associativity; ++i)
-		if(line[i].tag == tag && line[i].valid && !line[i].dirty)		//dirty??
+		if(line[i].tag == tag && line[i].valid){
+			found = true;
 			return line[i].word[wordIdx];		// requested word found
+		}
 	
+	found = false;
 	return 0;		// word not found
+}
+
+void Set::write(int data, unsigned tag, unsigned wordIdx, bool &found){
+	for(int i = 0; i < associativity; ++i)
+		if(line[i].tag == tag && line[i].valid){
+			found = true;
+			line[i].word[wordIdx] = data;		// requested word found
+		}
+	
+	found = false;		// not found in cache
 }
 
 void Set::print(){
@@ -174,4 +183,14 @@ void Set::print(){
 			cout << line[i].word[j] << " ";
 		cout << endl;
 	}
-}	
+}
+
+//CacheLine methods
+CacheLine::CacheLine(){
+	valid = false;
+	tag = 0;
+	
+	word = new int [blockSize];
+	for(int i = 0; i < blockSize; ++i)
+		word[i] = 0;
+}

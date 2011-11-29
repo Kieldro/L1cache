@@ -106,8 +106,6 @@ void run(int cache_associativity, int cache_blocksize, int cache_capacity){
 	}
 	if(DEBUG) cout << "End of input.\n";
 	
-	//cache.print_contents();
-	
-	//mem.print_contents(STARTING_ADDRESS, STARTING_ADDRESS + 1023, HEX);
+	cache.print();
 	if(DEBUG) cout << "SHAZAM!" << endl;
 }

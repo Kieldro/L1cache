@@ -1,31 +1,29 @@
 #ifndef _CACHE_MEMORY_H
 #define _CACHE_MEMORY_H
 
-#define HEX 0
-#define DEC 1
-#define OCT 2
-
 #include <iostream>
 #include <iomanip>
 #include "main_memory.h"
 
 using namespace std;
 
-struct cacheLine{
+struct CacheLine{
 	int *word;
+	static int blockSize;
 	unsigned tag;
 	bool valid;
-	bool dirty;
-	cacheLine(){ valid = dirty = 0; }
+	
+	CacheLine();
 };
 
 struct Set{
-	cacheLine *line;
+	CacheLine *line;
 	static int blockSize;
 	static int associativity;
 
 	Set();
-	int read(unsigned tag, unsigned wordIdx);
+	int read(unsigned tag, unsigned wordIdx, bool &found);
+	void write(int data, unsigned tag, unsigned wordIdx, bool &found);
 	void print();
 };
 

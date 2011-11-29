@@ -12,7 +12,7 @@ using namespace std;
 //*** constructor
 
 MainMemory::MainMemory(){
-	if (DEBUG) cout << "main mem default construction.\n";
+	if(DEBUG) cout << "CONSTRUCTING MainMemory obj: " << this << endl;
 	capacity = 16 * pow(2, 20)  / 4;	// 16 MiB to 32 bit words
 	// From Project specifications: You will print out the entire contents of the cache, and 1024 words of memory starting at address 0x003f7f00. 
 	// should the capacity of the main memory then be 1024?
@@ -33,7 +33,7 @@ MainMemory::~MainMemory(){
     if(memory != NULL){
 		delete [] memory;
     }
-	if (DEBUG) cout << "***************MainMemory objected deconstructed! : " << this << endl;
+	if (DEBUG) cout << "DESTRUCTED MainMemory obj: " << this << endl;
 }
 
 int MainMemory::read (int address){
@@ -58,35 +58,18 @@ bool MainMemory::write(int address, int data){
 	}
 }
 
-void MainMemory::print_contents(){
+void MainMemory::print(){
 	cout << "MAIN MEMORY:" << endl;
 	//assert -1 < format < 3
 	cout << "Address    Words" << endl;
 	
-	int i =  STARTING_ADDRESS;
 	int to =  STARTING_ADDRESS + 1023;
-	while(i <= to){
+	for(int i =  STARTING_ADDRESS; i < to; ++i){
 		//if(DEBUG) cout << "i = " << dec << i << endl;
-		cout  << setw(8) << setfill('0') << hex << i;		//print address first
-
-		for(int j = 0; j < 8; j++, i++){
-			cout << "   " << setw(8) << setfill('0');
-			switch(HEX){
-				case HEX:
-					cout << hex;
-					break;
-				case DEC:
-					cout << dec ;
-					break;
-				case OCT:
-					cout << oct;
-					break;
-				default:
-					cout << "Invalid format";
-					i = to + 1;		//break loop
-			}
-			 cout << memory[i];
-		}
-		cout  << endl;         
+		cout << setw(8) << setfill('0') << hex << i;
+		for(int j = 0; j < 8; j++)
+			cout << " " << setw(8) << setfill('0') << memory[i];
+		
+		cout << endl;
 	}
 }
