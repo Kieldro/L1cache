@@ -32,7 +32,7 @@ struct Set{
 
 class CacheMemory{
 	private:
-		int *memory;
+		int *memory;	// dummy var
 		Set *sets;
 		int capacity;
 		int blockSize;
@@ -55,6 +55,7 @@ class CacheMemory{
 		void print_contents();
 		void write(unsigned address, int data);
 		int read(unsigned address);
+		void parseAddress (unsigned &address, unsigned &wordIdx, unsigned &set, unsigned &tag);
 		void reset_content(void);
 };
 #endif

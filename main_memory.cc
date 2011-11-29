@@ -21,10 +21,13 @@ MainMemory::MainMemory(){
 	if (memory==0){
 		cout << "Failed to allocate memory!\n";
 	}
-     
-     for(int set = 0; set < capacity; ++set){
-		memory[set] = set;
-     }
+	
+	// initialize all memory elements to their addresses
+	for(int i = 0; i < capacity; ++i){
+		memory[i] = i;
+	}
+	if (DEBUG) cout << "constructor cap: " << capacity << endl;
+	if (DEBUG) cout << "memory: " << memory << endl;
 }
 
 //*** destructor
@@ -44,9 +47,12 @@ int MainMemory::read (int address){
 
 bool MainMemory::write(int address, int data){
 	if(address > -1 && address < capacity && memory != NULL){
-		cout << "Attempting to write...";
-		memory[address] = data;
-		cout << "Successful write!";
+		if (DEBUG) cout << "Attempting to write..." << dec  << endl;
+		if (DEBUG) cout << "cap: " << capacity << endl;
+		if (DEBUG) cout << "memory[" << address << "] is " << *memory << endl;
+		memory[(unsigned)address] = data;
+		if (DEBUG) cout << "Successful write!" << endl;
+		
 		return true;		// successful
 	}else{
 		cout << "Invalid memory location or memory NULL" << endl;

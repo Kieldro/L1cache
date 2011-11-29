@@ -98,11 +98,10 @@ void run(CacheMemory cache){
 		//if it is a cache write, then we have to read the data
 		if(read_write == CACHE_WRITE){
 		  	cin >> hex >> data;
-			if(DEBUG) cout << "Write: memory[" << hex << address << "] = " << data << endl;
-
-			cache.mem->write(address, data);		//write to memory	
+			if(DEBUG) cout << "Write: memory[" << hex << address << "] = 0x" << data << endl;
+			(cache.mem)->write(address, data);		//write to memory	
 		}else{		//read
-			if(DEBUG) cout << "Read memory[" << hex << address << "]: " << cache.read(address) << endl;
+			if(DEBUG) cout << "Read memory[" << hex << address << "]: 0x" << cache.read(address) << endl;
 		}
 	}
 	if(DEBUG) cout << "End of input.\n";

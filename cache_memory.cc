@@ -31,7 +31,7 @@ CacheMemory::CacheMemory(MainMemory m, int a, int b, int c){
 	if(DEBUG) cout << "bits for word index: " << wordOffsetBits << " bits" << endl;
 	if(DEBUG) cout << "bits for tag: " << tagBits << " bits" << endl;
 
-	// parse the address bit fields
+	// build masks
 	wMask = ( 1 << (int)wordOffsetBits ) - 1;
 	sMask = (( 1 << (int)setBits ) - 1) << (int)wordOffsetBits;
 	tMask = (( 1 << tagBits ) - 1) << (32 - tagBits);
@@ -64,7 +64,28 @@ CacheMemory::~CacheMemory(){
     delete [] sets;
 }
 
+// parse out the tag, set and word offset from the address
+void CacheMemory::parseAddress (unsigned &address, unsigned &wordIdx, unsigned &set, unsigned &tag){
+	
+	wordIdx = address & wMask;
+	set = (address & sMask) >> (int)wordOffsetBits;
+	tag = (address & tMask) >> (32 - tagBits);
+	
+	if(DEBUG) cout << "wordIdx: " << wordIdx << "" << endl;
+	if(DEBUG) cout << "set: " << set << "" << endl;
+	if(DEBUG) cout << "tag: 0x" << hex << tag << "" << endl;
+}
+
+
 void CacheMemory::write (unsigned address, int data){
+	unsigned wordIdx;
+	unsigned set;
+	unsigned tag;
+	
+	parseAddress(address, wordIdx, set, tag);		// parameters passed by reference
+	
+	//sets.write();
+
 	++writes;
 }
 
@@ -74,13 +95,7 @@ int CacheMemory::read (unsigned address){
 	unsigned tag;
 	int data = -1;
 	
-	wordIdx = address & wMask;
-	set = (address & sMask) >> (int)wordOffsetBits;
-	tag = (address & tMask) >> (32 - tagBits);
-	
-	if(DEBUG) cout << "wordIdx: " << wordIdx << "" << endl;
-	if(DEBUG) cout << "set: " << set << "" << endl;
-	if(DEBUG) cout << "tag: 0x" << hex << tag << "" << endl;
+	parseAddress(address, wordIdx, set, tag);		// parameters passed by reference
 	
 	//if(DEBUG) cout << "SHAZAM!" << endl;
 
