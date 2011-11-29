@@ -26,15 +26,14 @@ MainMemory::MainMemory(){
 	for(int i = 0; i < capacity; ++i){
 		memory[i] = i;
 	}
-	if (DEBUG) cout << "constructor cap: " << capacity << endl;
-	if (DEBUG) cout << "memory: " << memory << endl;
 }
 
 //*** destructor
 MainMemory::~MainMemory(){
     if(memory != NULL){
 		delete [] memory;
-    } 
+    }
+	if (DEBUG) cout << "***************MainMemory objected deconstructed! : " << this << endl;
 }
 
 int MainMemory::read (int address){
@@ -47,15 +46,14 @@ int MainMemory::read (int address){
 
 bool MainMemory::write(int address, int data){
 	if(address > -1 && address < capacity && memory != NULL){
-		if (DEBUG) cout << "Attempting to write..." << dec  << endl;
-		if (DEBUG) cout << "cap: " << capacity << endl;
-		if (DEBUG) cout << "memory[" << address << "] is " << *memory << endl;
 		memory[(unsigned)address] = data;
-		if (DEBUG) cout << "Successful write!" << endl;
 		
 		return true;		// successful
 	}else{
 		cout << "Invalid memory location or memory NULL" << endl;
+		if (DEBUG) cout << "memory[" << address << "] is " << memory << endl;
+		if (DEBUG) cout << "cap: " << capacity << endl;
+		
 		return false;
 	}
 }

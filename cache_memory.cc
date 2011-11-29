@@ -11,11 +11,11 @@
 using namespace std;
 
 // CacheMemory method definitions
-CacheMemory::CacheMemory(MainMemory m, int a, int b, int c){
-	capacity = c * pow(2, 10) / 4;		// convert KiB to words
-	mem = &m;		// link to a MainMemory object
-	associativity = a;
-	blockSize = b / 4;		// convert from bytes to words
+CacheMemory::CacheMemory(int assoc, int bSize, int cap){
+	capacity = cap * pow(2, 10) / 4;		// convert KiB to words
+	mem = new MainMemory;		// fixed segfault
+	associativity = assoc;
+	blockSize = bSize / 4;		// convert from bytes to words
 	//int totalBlocks = capacity;
 	hits = misses = writes = reads = evicted = 0;
 	

@@ -29,7 +29,7 @@ newest UML diagram at: http://www.gliffy.com/pubdoc/3102540/L.png
 
 using namespace std;
 
-void run(CacheMemory cache);
+void run(int, int, int);
 
 int main (int argc, char *argv[ ])
 {
@@ -69,15 +69,16 @@ int main (int argc, char *argv[ ])
 
 
 	// initialite cache and main memory
-	MainMemory mem;
-	CacheMemory cache(mem, cache_associativity, cache_blocksize, cache_capacity);
 	
-	run(cache);
+	run(cache_associativity, cache_blocksize, cache_capacity);
 	
 	return 0;
 }
 
-void run(CacheMemory cache){
+void run(int cache_associativity, int cache_blocksize, int cache_capacity){
+	if(DEBUG) cout << "SHAZAM!" << endl;
+	
+	CacheMemory cache(cache_associativity, cache_blocksize, cache_capacity);
 
 	// Input
 	int read_write;

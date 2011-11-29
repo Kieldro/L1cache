@@ -32,25 +32,19 @@ struct Set{
 
 class CacheMemory{
 	private:
-		int *memory;	// dummy var
 		Set *sets;
+		int *memory;	// dummy var
 		int capacity;
 		int blockSize;
 		int associativity;
 		float setBits;
 		float wordOffsetBits;
 		int tagBits;
-		unsigned wMask;
-		unsigned sMask;
-		unsigned tMask;
-		int hits;
-		int misses;
-		int reads;
-		int writes;
-		int evicted;
+		unsigned wMask, sMask, tMask;
+		int hits, misses, reads, writes, evicted;
 	public: 
-		MainMemory *mem;
-		CacheMemory(MainMemory, int a, int bsize, int c);
+		MainMemory *mem;		// public for debug
+		CacheMemory(int assoc, int bSize, int cap);
 		~CacheMemory();
 		void print_contents();
 		void write(unsigned address, int data);
