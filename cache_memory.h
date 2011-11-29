@@ -11,21 +11,20 @@
 
 using namespace std;
 
-
 struct cacheLine{
+	int *word;
 	unsigned tag;
 	bool valid;
 	bool dirty;
-	int *word;
-	cacheLine(){valid = dirty = 0;}
+	cacheLine(){ valid = dirty = 0; }
 };
 
 struct Set{
 	cacheLine *line;
-	int blockSize;
+	static int blockSize;
+	static int associativity;
 
-	//Set();
-	void initialize(int);
+	Set();
 	int read(unsigned tag, unsigned wordIdx);
 	void print();
 };
@@ -33,24 +32,18 @@ struct Set{
 class CacheMemory{
 	private:
 		Set *sets;
-		int *memory;	// dummy var
-		int capacity;
-		int blockSize;
-		int associativity;
-		float setBits;
-		float wordOffsetBits;
-		int tagBits;
+		int capacity, blockSize, associativity;
+		int setBits, wordOffsetBits, tagBits;
 		unsigned wMask, sMask, tMask;
-		int hits, misses, reads, writes, evicted;
+		int hits, misses, reads, writes, evicted;		// syntactic sugar
 	public: 
 		MainMemory *mem;		// public for debug
 		CacheMemory(int assoc, int bSize, int cap);
 		~CacheMemory();
-		void print_contents();
-		void write(unsigned address, int data);
+		void print();
 		int read(unsigned address);
-		void parseAddress (unsigned &address, unsigned &wordIdx, unsigned &set, unsigned &tag);
-		void reset_content(void);
+		void write(unsigned address, int data);
+		void parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag);
 };
-#endif
 
+#endif

@@ -31,8 +31,7 @@ using namespace std;
 
 void run(int, int, int);
 
-int main (int argc, char *argv[ ])
-{
+int main (int argc, char *argv[ ]){
 	//the values that we get from the 
 	//command line will be put into these
 	//variables. we can use them later in the program
@@ -110,4 +109,5 @@ void run(int cache_associativity, int cache_blocksize, int cache_capacity){
 	//cache.print_contents();
 	
 	//mem.print_contents(STARTING_ADDRESS, STARTING_ADDRESS + 1023, HEX);
+	if(DEBUG) cout << "SHAZAM!" << endl;
 }

@@ -58,14 +58,6 @@ bool MainMemory::write(int address, int data){
 	}
 }
 
-void MainMemory::reset_content(void){
-	if(capacity > 0 && memory != NULL){
-		for(int i = 0; i < capacity; i++){
-			memory[i] = 0;
-	  	}
-	}
-}
-
 void MainMemory::print_contents(){
 	cout << "MAIN MEMORY:" << endl;
 	//assert -1 < format < 3
