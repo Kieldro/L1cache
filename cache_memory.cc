@@ -225,9 +225,11 @@ unsigned CacheMemory::spliceAddress (unsigned set, unsigned tag){
 	
 	address = 0x00;		// ZEXT
 	temp = 0x00;
-	address = (address & tag) << (32 - tagBits);
-	temp = (set & temp) << wordOffsetBits;
+	address = (address | tag) << (32 - tagBits);
+	temp = (set | temp) << wordOffsetBits;
 	address |= temp;
+	
+	if(DEBUG) cout << "spliced address: 0x" << hex<< address << "" << endl;
 	
 	return address;	
 }
