@@ -3,6 +3,7 @@
 
 #define STARTING_ADDRESS 0x003f7f00
 #define DEBUG true
+#define DIRTY true
 
 #include<iostream>
 

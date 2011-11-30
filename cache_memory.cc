@@ -21,10 +21,9 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	mem = new MainMemory;		// fixed segfault
 	associativity = assoc;
 	blockSize = bSize / 4;		// convert from bytes to words
-	//int totalBlocks = capacity;
 	hits = misses = writes = reads = evicted = 0;
+	numSets = capacity / blockSize / associativity;
 	
-	const int numSets = capacity / blockSize / associativity;
 	//assert(divides nicely);
 	if(DEBUG) cout << "cache capacity: " << capacity << " words" << endl;
 	if(DEBUG) cout << "block size: " << blockSize << " words" << endl;
@@ -50,9 +49,6 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	Set::associativity = associativity;
 	Set::blockSize = blockSize;
 	sets = new Set [numSets];
-	
-	if(DEBUG) cout << "set[0]: " << sets[0].associativity << " cacheLines" << endl;
-	
 }
 
 //*** destructor
@@ -196,7 +192,6 @@ void CacheMemory::print(){
 	
 	cout << endl;
 	
-	int numSets = capacity / blockSize / associativity;
 	for(int nSets = 0; nSets < numSets; nSets++)
 		sets[nSets].print(nSets);
 	
@@ -210,12 +205,23 @@ void CacheMemory::print(){
 	*/
 }
 
+// run through entire cache and write all the dirty blocks to main mem (non-evicted)
 void CacheMemory::writeDirtyBlocks (){
-	int numSets = capacity / blockSize / associativity;
-	// run through entire cache and write all the dirty blocks to main mem
-	for(int i = 0; i < numSets; ++i)
-		if(true == true)
-			;//sets[i].line[];
+	unsigned address;
+	unsigned temp;
+	
+	for(int s = 0; s < numSets; ++s)
+		for(int l = 0; l < associativity; ++l)		// check all cacheLines in set
+			if(sets[s].line[l].dirty == DIRTY){
+				// splice address 
+				address = 0x00;		// ZEXT
+				temp = 0x00;
+				address = (address & sets[s].line[l].tag) << (32 - tagBits);
+				temp = (s & temp) << wordOffsetBits;
+				address |= temp;
+				for(int w = 0; w < blockSize; ++w)		//write block
+					mem->write(address + w, sets[s].line[l].word[w]);
+		}
 	
 }
 
@@ -279,7 +285,6 @@ CacheLine::CacheLine(){
 }
 
 void CacheLine::print(){
-	// valid AND dirty??
 	cout << valid << "   " << setw(8) << setfill('0') << hex << tag << "    " << dirty << " ";
 	// print words
 	for(int wordsPerBlock = 0; wordsPerBlock < blockSize; ++wordsPerBlock)

@@ -38,6 +38,7 @@ class CacheMemory{
 		Set *sets;
 		int capacity, blockSize, associativity;
 		int setBits, wordOffsetBits, tagBits;
+		int numSets;
 		unsigned wMask, sMask, tMask;
 		vector<int> dirtyBlocks;
 		int hits, misses, reads, writes, evicted;		// syntactic sugar
