@@ -21,7 +21,7 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	mem = new MainMemory;		// fixed segfault
 	associativity = assoc;
 	blockSize = bSize / 4;		// convert from bytes to words
-	hits = misses = writes = reads = evicted = 0;
+	hits = misses = writes = reads = evicted = totalReads = totalWrites = 0;
 	numSets = capacity / blockSize / associativity;
 	
 	//assert(divides nicely);
@@ -64,8 +64,7 @@ int CacheMemory::read (unsigned address){
 	unsigned tag;
 	bool found = false;
 	int data = -1;
-	++reads;
-	
+	++totalReads;
 	
 	parseAddress(address, wordIdx, set, tag);		// parameters passed by reference
 	data = sets[set].read(tag, wordIdx, found);	
@@ -76,11 +75,11 @@ int CacheMemory::read (unsigned address){
 		++hits;
 	}
 	else{		// not found in cache
+		++reads;
 		data = mem->read(address);
 		if(sets[set].line[sets[set].getLRU()].dirty)	// block to be replaced is dirty; write old block to memory, then replace with new block
 		{
 			int start = spliceAddress(set, sets[set].line[sets[set].getLRU()].tag);
-			cout << "spliceAddress(set, tag): " << start << endl;
 			for(int i = 0; i < blockSize; i++)
 			{
 				mem->write(start + i, sets[set].line[sets[set].getLRU()].word[i]);
@@ -111,12 +110,14 @@ void CacheMemory::write (unsigned address, int data){
 	unsigned set;
 	unsigned tag;
 	bool found = false;
-	
+	++totalWrites;
+
 	parseAddress(address, wordIdx, set, tag);		// parameters passed by reference
 	sets[set].write(data, tag, wordIdx, found);
 
 	if(!found)
 		{
+			++writes;
 			if(sets[set].line[sets[set].getLRU()].dirty)
 			{
 				int start = spliceAddress(set, sets[set].line[sets[set].getLRU()].tag);
@@ -154,7 +155,6 @@ void CacheMemory::write (unsigned address, int data){
 		;
 	
 	if(DEBUG) sets[set].print(set);
-	++writes;
 }
 
 // parse out the tag, set and word offset from the address
@@ -174,16 +174,16 @@ void CacheMemory::parseAddress (const unsigned address, unsigned &wordIdx, unsig
 void CacheMemory::print(){
 	cout << "STATISTICS:" << dec << endl;
 	cout << "Misses:" << endl;
-	cout << "Total: " << misses;
+	cout << "Total: " << writes + reads;
 	cout << " DataReads: " << reads;
 	cout << " DataWrites: " << writes << endl;
 	cout << "Miss rate: " << endl;
-	cout << "Total: " << misses;
-	cout << " DataReads: " << reads;
-	cout << " DataWrites: " << writes << endl;
-	cout << "Number of Dirty Blocks Evicted From the Cache: " << evicted << endl;
+	cout << "Total: " << float( ( float(reads) + float(writes) ) / ( float(totalReads) + float(totalWrites) ) );
+	cout << " DataReads: " << float( float(reads) / float(totalReads) );
+	cout << " DataWrites: " << float( float(writes) / float(totalWrites) ) << endl;
+	cout << "Number of Dirty Blocks Evicted From the Cache: " << evicted << endl << endl;
 	
-	cout << "CACHE MEMORY:" << endl;
+	cout << "CACHE CONTENTS" << endl;
 	//assert -1 < format < 3
 	cout << "Set   V    Tag    Dirty    ";
 	for(int i=0; i<blockSize; ++i) cout << "Word" << i << "      ";
@@ -192,7 +192,7 @@ void CacheMemory::print(){
 	
 	for(int nSets = 0; nSets < numSets; nSets++)
 		sets[nSets].print(nSets);
-	
+	cout << endl;
 	//print mem
 	mem->print();
 	
