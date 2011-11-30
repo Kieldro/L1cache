@@ -77,12 +77,12 @@ int CacheMemory::read (unsigned address){
 	else{		// not found in cache
 		++reads;
 		data = mem->read(address);
-		if(sets[set].line[sets[set].getLRU()].dirty)	// block to be replaced is dirty; write old block to memory, then replace with new block
+		if(sets[set].line[sets[set].LRU].dirty)	// block to be replaced is dirty; write old block to memory, then replace with new block
 		{
-			int start = spliceAddress(set, sets[set].line[sets[set].getLRU()].tag);
+			int start = spliceAddress(set, sets[set].line[sets[set].LRU].tag);
 			for(int i = 0; i < blockSize; i++)
 			{
-				mem->write(start + i, sets[set].line[sets[set].getLRU()].word[i]);
+				mem->write(start + i, sets[set].line[sets[set].LRU].word[i]);
 			}
 			evicted++;
 		}
@@ -91,11 +91,11 @@ int CacheMemory::read (unsigned address){
 		for(int i = 0; i < blockSize; i++)
 		{
 			// i never exceeds mem.capacity because both are mulitples of blockSize
-			sets[set].line[sets[set].getLRU()].word[i] = mem->read(start + i);
+			sets[set].line[sets[set].LRU].word[i] = mem->read(start + i);
 		}
-		sets[set].line[sets[set].getLRU()].tag = tag;
-		sets[set].line[sets[set].getLRU()].valid = true;
-		sets[set].line[sets[set].getLRU()].dirty = false;
+		sets[set].line[sets[set].LRU].tag = tag;
+		sets[set].line[sets[set].LRU].valid = true;
+		sets[set].line[sets[set].LRU].dirty = false;
 		sets[set].updateLRU();
 		++misses;
 	}
@@ -118,24 +118,24 @@ void CacheMemory::write (unsigned address, int data){
 	if(!found)
 		{
 			++writes;
-			if(sets[set].line[sets[set].getLRU()].dirty)
+			if(sets[set].line[sets[set].LRU].dirty)
 			{
-				int start = spliceAddress(set, sets[set].line[sets[set].getLRU()].tag);
+				int start = spliceAddress(set, sets[set].line[sets[set].LRU].tag);
 				for(int i = 0; i < blockSize; i++)
 				{
-					mem->write(start + i, sets[set].line[sets[set].getLRU()].word[i]);
+					mem->write(start + i, sets[set].line[sets[set].LRU].word[i]);
 				}
 				++evicted;
 			}
 			int start = address - (address % blockSize);
 			for(int i = 0; i < blockSize; i++)
 			{
-				sets[set].line[sets[set].getLRU()].word[i] = mem->read(start + i);
+				sets[set].line[sets[set].LRU].word[i] = mem->read(start + i);
 			}
-			sets[set].line[sets[set].getLRU()].tag = tag;
-			sets[set].line[sets[set].getLRU()].valid = true;
-			sets[set].line[sets[set].getLRU()].word[address % blockSize] = data; // modify it with the write
-			sets[set].line[sets[set].getLRU()].dirty = true; // then mark it as dirty
+			sets[set].line[sets[set].LRU].tag = tag;
+			sets[set].line[sets[set].LRU].valid = true;
+			sets[set].line[sets[set].LRU].word[address % blockSize] = data; // modify it with the write
+			sets[set].line[sets[set].LRU].dirty = true; // then mark it as dirty
 			sets[set].updateLRU();
 			// ++misses;??????
 			
@@ -265,21 +265,20 @@ int Set::read(unsigned tag, unsigned wordIdx, bool &found){
 }
 
 void Set::write(int data, unsigned tag, unsigned wordIdx, bool &found){
-	for(int i = 0; i < associativity; ++i)
-	   {
+	for(int i = 0; i < associativity; ++i){
 		if(line[i].tag == tag && line[i].valid){
 			found = true;
 			line[i].word[wordIdx] = data;		// requested word found
 			return;
 		}
-		}
+	}
 	
 	found = false;		// not found in cache
 }
 
-void Set::print(int nSets){
+void Set::print(int set){
 	for(int blocksPerSet = 0; blocksPerSet < associativity; ++blocksPerSet){
-		cout << hex << nSets << "     ";
+		cout << hex << set << "     ";
 		line[blocksPerSet].print();
 	}
 }
@@ -287,11 +286,6 @@ void Set::print(int nSets){
 void Set::updateLRU()
 {
 	LRU = (LRU + 1) % associativity;
-}
-
-int Set::getLRU()
-{
-	return LRU;
 }
 
 //CacheLine methods

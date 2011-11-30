@@ -28,8 +28,7 @@ struct Set{
 	int read(unsigned tag, unsigned wordIdx, bool &found);
 	void write(int data, unsigned tag, unsigned wordIdx, bool &found);
 	void updateLRU();
-	int getLRU();
-	void print(int nSets);
+	void print(int set);
 };
 
 class CacheMemory{
