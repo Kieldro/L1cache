@@ -49,6 +49,7 @@ class CacheMemory{
 		int read(unsigned address);
 		void write(unsigned address, int data);
 		void parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag);
+		void writeDirtyBlocks ();
 };
 
 #endif

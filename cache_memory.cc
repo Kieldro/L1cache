@@ -123,7 +123,6 @@ void CacheMemory::write (unsigned address, int data){
 	else
 		 {
 			sets[set].line[sets[set].getLRU()].word[address%blockSize] = data;
-			
 		 }
 		//sets[set].line[] = data;		// write in whole block??
 		;
@@ -134,21 +133,10 @@ void CacheMemory::write (unsigned address, int data){
 // parse out the tag, set and word offset from the address
 void CacheMemory::parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag){
 	wordIdx = address & wMask;
-	
-	//set = ( ( address / blockSize ) % (blockSize * associativity) );
-	// I believe the correct formula to find out which set the word should be stored is found by
-	// set = ( (word_address / words_per_block) % words_per_set);
-	// for example, in sample_output_file...
-	// >> 1 003f8010 11111111
-	// 003f8010 = 4161552 in decimal (word_address)
-	// word_address / words_per_block = 4161552 / 8 = 520194 * words_per_set = 520194 % 32 = 2,
-	// and 2 is the set 003f8010 is stored in 
-	
 	set = (address & sMask) >> wordOffsetBits;
 	// There is some weird casting behavior where:
 	// wordOffsetBits = (float)log(blockSize)/log(2);
 	// wordOffsetBits = log(blockSize)/log(2);
-	// give 2 different values. That's what was messing up the masks.
 	
 	tag = (address & tMask) >> (32 - tagBits);
 	// if(DEBUG) cout << "wordIdx: " << wordIdx << "" << endl;
@@ -187,6 +175,15 @@ void CacheMemory::print(){
 	0     1   00003fe8    0    003fe800   003fe801   003fe802   003fe803   003fe804   003fe805   003fe806   003fe807   
 	0     1   00003f80    0    003f8000   003f8001   003f8002   003f8003   66666666   003f8005   003f8006   003f8007  
 	*/
+}
+
+void CacheMemory::writeDirtyBlocks (){
+	int numSets = capacity / blockSize / associativity;
+	// run through entire cache and write all the dirty blocks to main mem
+	for(int i = 0; i < numSets; ++i)
+		if(true == true)
+			;//sets[i].line[];
+	
 }
 
 // Set methods
