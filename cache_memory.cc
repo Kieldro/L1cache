@@ -17,12 +17,13 @@ int CacheLine::blockSize = 0;
 // CacheMemory method definitions
 CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	if(DEBUG) cout << "CONSTRUCTING CacheMemory obj: " << this << endl;
-	capacity = cap * pow(2, 10) / 4;		// convert KiB to words
+	this->capacity = cap * pow(2, 10) / 4;		// convert KiB to words
 	mem = new MainMemory;		// fixed segfault
 	associativity = assoc;
 	blockSize = bSize / 4;		// convert from bytes to words
 	//int totalBlocks = capacity;
 	hits = misses = writes = reads = evicted = 0;
+	
 	
 	const int numSets = capacity / blockSize / associativity;
 	//assert(divides nicely);
@@ -32,6 +33,7 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	setBits = log(numSets)/log(2);
 	wordOffsetBits = log(blockSize)/log(2);
 	tagBits = 32 - setBits - wordOffsetBits;
+
 	if(DEBUG) cout << "bits for set index: " << setBits << " bits" << endl;
 	if(DEBUG) cout << "bits for word index: " << wordOffsetBits << " bits" << endl;
 	if(DEBUG) cout << "bits for tag: " << tagBits << " bits" << endl;
@@ -40,7 +42,7 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	wMask = ( 1 << wordOffsetBits ) - 1;
 	sMask = (( 1 << setBits ) - 1) << wordOffsetBits;
 	tMask = (( 1 << tagBits ) - 1) << (32 - tagBits);
-	
+		
 	if(DEBUG) cout << "word mask: 0x" << hex << wMask << "" << endl;
 	if(DEBUG) cout << "set mask: 0x" << sMask << "" << endl;
 	if(DEBUG) cout << "tag mask: 0x" << tMask << "" << endl;
@@ -51,6 +53,7 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	sets = new Set [numSets];
 	
 	if(DEBUG) cout << "set[0]: " << sets[0].associativity << " cacheLines" << endl;
+	
 }
 
 //*** destructor
@@ -129,6 +132,8 @@ void CacheMemory::print(){
 	for(int i=0; i<8; ++i) cout << "Word" << i << "      ";
 	
 	cout << endl;
+	
+	/*
 	for(int i = 0; i < capacity; ){		// print entire cache
 		cout << 69 << "     " << sets[0].line[0].valid << "   "
 			 << setw(8) << setfill('0')<< hex << sets[0].line[0].tag << "    "
@@ -138,6 +143,24 @@ void CacheMemory::print(){
 			cout << "   " << setw(8) << setfill('0') << read(i);
 		}
 		cout  << endl;          
+	}
+	*/
+	
+	int numSets = capacity / blockSize / associativity;
+	for(int nSets = 0; nSets < numSets; nSets++)
+	{
+		for(int blocksPerSet = 0; blocksPerSet < associativity; blocksPerSet++)
+		{
+			cout << nSets << "     " << sets[nSets].line[blocksPerSet].valid << "   "
+			<< setw(8) << setfill('0') << hex << sets[nSets].line[blocksPerSet].tag << "    "
+			<< sets[nSets].line[blocksPerSet].valid << " ";
+			// print words
+			for(int wordsPerBlock = 0; wordsPerBlock < blockSize; wordsPerBlock++)
+			{
+				cout << "   " << setw(8) << setfill('0') << sets[nSets].line[blocksPerSet].word[wordsPerBlock];
+			}
+			cout << endl;
+		}
 	}
 	
 	//print mem
