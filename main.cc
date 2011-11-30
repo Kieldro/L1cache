@@ -4,7 +4,7 @@ Miguel Diaz
 11-30-11
 CS 352
 
-Simulates and L1 cache
+Simulates an L1 cache
 
 notes:
 run with:
