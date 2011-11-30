@@ -6,7 +6,6 @@
 //*** the .cc file of a class should include its .h 
 #include "main_memory.h"
 
-
 using namespace std;
 
 //*** constructor
@@ -37,9 +36,8 @@ MainMemory::~MainMemory(){
 int MainMemory::read (int address){
 	if(address > -1 && address < capacity && memory != NULL){
 		return memory[address];
-	}else{
+	}else
 		cout << "Invalid memory location or memory NULL" << endl;
-	}
 }
 
 bool MainMemory::write(int address, int data){
