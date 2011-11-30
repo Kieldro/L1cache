@@ -71,7 +71,6 @@ int CacheMemory::read (unsigned address){
 	int data = -1;
 	
 	parseAddress(address, wordIdx, set, tag);		// parameters passed by reference
-
 	data = sets[set].read(tag, wordIdx, found);		// found passed by ref
 	if(found)
 		++hits;
@@ -92,9 +91,8 @@ void CacheMemory::write (unsigned address, int data){
 	bool found = false;
 	
 	parseAddress(address, wordIdx, set, tag);		// parameters passed by reference
-	
 	sets[set].write(data, tag, wordIdx, found);
-	
+
 	if(!found)
 		//sets[set].line[] = data;		// write in whole block??
 		;
@@ -105,13 +103,23 @@ void CacheMemory::write (unsigned address, int data){
 // parse out the tag, set and word offset from the address
 void CacheMemory::parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag){
 	wordIdx = address & wMask;
-	set = (address & sMask) >> (int)wordOffsetBits;
+	
+	set = ( ( address / blockSize ) % (blockSize * associativity) );
+	// I believe the correct formula to find out which set the word should be stored is found by
+	// set = ( (word_address / words_per_block) % words_per_set);
+	// for example, in sample_output_file...
+	// >> 1 003f8010 11111111
+	// 003f8010 = 4161552 in decimal (word_address)
+	// word_address / words_per_block = 4161552 / 8 = 520194 * words_per_set = 520194 % 32 = 2,
+	// and 2 is the set 003f8010 is stored in 
+	// you can repeat this for the other memory addresses in the input_trace.txt and see it be true
+	// I think you were on the right track, but I couldn't figure it out through masks; if you still want to use masks, you're free to 
+	// edit/revert my revision of the line above.
+	
 	tag = (address & tMask) >> (32 - tagBits);
-	/*
-	if(DEBUG) cout << "wordIdx: " << wordIdx << "" << endl;
-	if(DEBUG) cout << "set: " << set << "" << endl;
-	if(DEBUG) cout << "tag: 0x" << hex << tag << "" << endl;
-	*/
+	// if(DEBUG) cout << "wordIdx: " << wordIdx << "" << endl;
+	// if(DEBUG) cout << "set: " << set << "" << endl;
+	// if(DEBUG) cout << "tag: 0x" << hex << tag << "" << endl;
 }
 
 void CacheMemory::print(){
@@ -147,9 +155,10 @@ void CacheMemory::print(){
 }
 
 // Set methods
-Set::Set(){
+Set::Set() {
 	CacheLine::blockSize = blockSize;
 	line = new CacheLine [associativity];		// CacheLines per set (associativity)
+	LRU = 0;
 }
 
 int Set::read(unsigned tag, unsigned wordIdx, bool &found){
@@ -178,6 +187,11 @@ void Set::print(int nSets){
 		cout << nSets << "     ";
 		line[blocksPerSet].print();
 	}
+}
+
+void Set::updateLRU()
+{
+	LRU = (LRU + 1) % associativity;
 }
 
 //CacheLine methods
