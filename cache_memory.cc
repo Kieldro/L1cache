@@ -72,7 +72,6 @@ int CacheMemory::read (unsigned address){
 
 	if(found)
 	{
-		cout << "Found " << address << " in set " << set << ", word " << wordIdx << endl;
 		data = sets[set].read(tag, wordIdx, found);		// found passed by ref< wordIdx << endl;
 		++hits;
 	}
@@ -80,7 +79,8 @@ int CacheMemory::read (unsigned address){
 		data = mem->read(address);
 		if(sets[set].line[sets[set].getLRU()].dirty)	// block to be replaced is dirty; write old block to memory, then replace with new block
 		{
-			int start = address - (address % blockSize);
+			int start = spliceAddress(set, sets[set].line[sets[set].getLRU()].tag);
+			cout << "spliceAddress(set, tag): " << start << endl;
 			for(int i = 0; i < blockSize; i++)
 			{
 				mem->write(start + i, sets[set].line[sets[set].getLRU()].word[i]);
@@ -97,7 +97,7 @@ int CacheMemory::read (unsigned address){
 		sets[set].line[sets[set].getLRU()].tag = tag;
 		sets[set].line[sets[set].getLRU()].valid = true;
 		sets[set].line[sets[set].getLRU()].dirty = false;
-		
+		sets[set].updateLRU();
 		++misses;
 	}
 	
@@ -113,15 +113,13 @@ void CacheMemory::write (unsigned address, int data){
 	bool found = false;
 	
 	parseAddress(address, wordIdx, set, tag);		// parameters passed by reference
-	cout << "TAG: " << tag << " and the four are ";
 	sets[set].write(data, tag, wordIdx, found);
-	cout << " and found: " << found << endl;
 
 	if(!found)
 		{
 			if(sets[set].line[sets[set].getLRU()].dirty)
 			{
-				int start = address - (address % blockSize);
+				int start = spliceAddress(set, sets[set].line[sets[set].getLRU()].tag);
 				for(int i = 0; i < blockSize; i++)
 				{
 					mem->write(start + i, sets[set].line[sets[set].getLRU()].word[i]);
@@ -196,7 +194,7 @@ void CacheMemory::print(){
 		sets[nSets].print(nSets);
 	
 	//print mem
-	//mem->print();
+	mem->print();
 	
 	/*
 	Set   V    Tag    Dirty    Word0      Word1      Word2      Word3      Word4      Word5      Word6      Word7   
