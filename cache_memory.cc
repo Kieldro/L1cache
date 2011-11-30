@@ -74,8 +74,14 @@ int CacheMemory::read (unsigned address){
 	if(found)
 		++hits;
 	else{
+		
 		data = mem->read(address);
-		//CacheMemory.store(data) according to LRU
+		for(int i = 0; i < blockSize; i++)
+		{
+			sets[set].line[sets[set].getLRU()].word[i] = mem->read(address + i);
+		}
+		sets[set].line[sets[set].getLRU()].tag = tag;
+		sets[set].updateLRU();
 		++misses;
 	}
 	++reads;
@@ -194,6 +200,11 @@ void Set::print(int nSets){
 void Set::updateLRU()
 {
 	LRU = (LRU + 1) % associativity;
+}
+
+int Set::getLRU()
+{
+	return LRU;
 }
 
 //CacheLine methods
