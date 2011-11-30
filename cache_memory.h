@@ -2,6 +2,7 @@
 #define _CACHE_MEMORY_H
 
 #include <iostream>
+#include <vector>
 #include <iomanip>
 #include "main_memory.h"
 
@@ -12,6 +13,7 @@ struct CacheLine{
 	static int blockSize;
 	unsigned tag;
 	bool valid;
+	bool dirty;
 	
 	CacheLine();
 	void print();
@@ -37,6 +39,7 @@ class CacheMemory{
 		int capacity, blockSize, associativity;
 		int setBits, wordOffsetBits, tagBits;
 		unsigned wMask, sMask, tMask;
+		vector<int> dirtyBlocks;
 		int hits, misses, reads, writes, evicted;		// syntactic sugar
 	public: 
 		MainMemory *mem;		// public for debug
