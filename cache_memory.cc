@@ -216,12 +216,6 @@ void CacheMemory::print(){
 	cout << endl;
 	//print mem
 	mem->print();
-	
-	/*
-	Set   V    Tag    Dirty    Word0      Word1      Word2      Word3      Word4      Word5      Word6      Word7   
-	0     1   00003fe8    0    003fe800   003fe801   003fe802   003fe803   003fe804   003fe805   003fe806   003fe807   
-	0     1   00003f80    0    003f8000   003f8001   003f8002   003f8003   66666666   003f8005   003f8006   003f8007  
-	*/
 }
 
 // run through entire cache and write all the dirty blocks to main mem (non-evicted)
@@ -247,8 +241,6 @@ unsigned CacheMemory::spliceAddress (unsigned set, unsigned tag){
 	address = (address | tag) << (32 - tagBits);
 	temp = (set | temp) << wordOffsetBits;
 	address |= temp;
-	
-	if(DEBUG) cout << "spliced address: 0x" << hex<< address << "" << endl;
 	
 	return address;	
 }
