@@ -78,6 +78,7 @@ int CacheMemory::read (unsigned address){
 		int start = address - (address % blockSize);		// start at first word in block
 		for(int i = 0; i < blockSize; i++)
 		{
+			// i never exceeds mem.capacity because both are mulitples of blockSize
 			sets[set].line[sets[set].getLRU()].word[i] = mem->read(start + i);
 		}
 		sets[set].line[sets[set].getLRU()].tag = tag;
