@@ -14,6 +14,7 @@ struct CacheLine{
 	bool valid;
 	
 	CacheLine();
+	void print();
 };
 
 struct Set{
@@ -24,7 +25,7 @@ struct Set{
 	Set();
 	int read(unsigned tag, unsigned wordIdx, bool &found);
 	void write(int data, unsigned tag, unsigned wordIdx, bool &found);
-	void print();
+	void print(int nSets);
 };
 
 class CacheMemory{

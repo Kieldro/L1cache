@@ -14,8 +14,6 @@ using namespace std;
 MainMemory::MainMemory(){
 	if(DEBUG) cout << "CONSTRUCTING MainMemory obj: " << this << endl;
 	capacity = 16 * pow(2, 20)  / 4;	// 16 MiB to 32 bit words
-	// From Project specifications: You will print out the entire contents of the cache, and 1024 words of memory starting at address 0x003f7f00. 
-	// should the capacity of the main memory then be 1024?
 	memory = new (nothrow) int [capacity];
 	if (DEBUG) cout << "main mem capacity: " << capacity << " words" << endl;
 	if (memory==0){

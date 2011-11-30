@@ -129,47 +129,21 @@ void CacheMemory::print(){
 	cout << "CACHE MEMORY:" << endl;
 	//assert -1 < format < 3
 	cout << "Set   V    Tag    Dirty    ";
-	for(int i=0; i<8; ++i) cout << "Word" << i << "      ";
+	for(int i=0; i<blockSize; ++i) cout << "Word" << i << "      ";
 	
 	cout << endl;
 	
-	/*
-	for(int i = 0; i < capacity; ){		// print entire cache
-		cout << 69 << "     " << sets[0].line[0].valid << "   "
-			 << setw(8) << setfill('0')<< hex << sets[0].line[0].tag << "    "
-			 << sets[0].line[0].valid << " ";		// broken; valid AND dirty??
-		//print words
-		for(int j = 0; j < 8; ++j, ++i){
-			cout << "   " << setw(8) << setfill('0') << read(i);
-		}
-		cout  << endl;          
-	}
-	*/
-	
 	int numSets = capacity / blockSize / associativity;
 	for(int nSets = 0; nSets < numSets; nSets++)
-	{
-		for(int blocksPerSet = 0; blocksPerSet < associativity; blocksPerSet++)
-		{
-			cout << nSets << "     " << sets[nSets].line[blocksPerSet].valid << "   "
-			<< setw(8) << setfill('0') << hex << sets[nSets].line[blocksPerSet].tag << "    "
-			<< sets[nSets].line[blocksPerSet].valid << " ";
-			// print words
-			for(int wordsPerBlock = 0; wordsPerBlock < blockSize; wordsPerBlock++)
-			{
-				cout << "   " << setw(8) << setfill('0') << sets[nSets].line[blocksPerSet].word[wordsPerBlock];
-			}
-			cout << endl;
-		}
-	}
+		sets[nSets].print(nSets);
 	
 	//print mem
-	mem->print();
+	//mem->print();
 	/*
-Set   V    Tag    Dirty    Word0      Word1      Word2      Word3      Word4      Word5      Word6      Word7   
-0     1   00003fe8    0    003fe800   003fe801   003fe802   003fe803   003fe804   003fe805   003fe806   003fe807   
-0     1   00003f80    0    003f8000   003f8001   003f8002   003f8003   66666666   003f8005   003f8006   003f8007  
-*/	
+	Set   V    Tag    Dirty    Word0      Word1      Word2      Word3      Word4      Word5      Word6      Word7   
+	0     1   00003fe8    0    003fe800   003fe801   003fe802   003fe803   003fe804   003fe805   003fe806   003fe807   
+	0     1   00003f80    0    003f8000   003f8001   003f8002   003f8003   66666666   003f8005   003f8006   003f8007  
+	*/
 }
 
 // Set methods
@@ -199,12 +173,10 @@ void Set::write(int data, unsigned tag, unsigned wordIdx, bool &found){
 	found = false;		// not found in cache
 }
 
-void Set::print(){
-	cout << "Set:" << endl;
-	for(int i = 0; i < associativity; ++i){
-		for(int j = 0; j < blockSize; ++j)
-			cout << line[i].word[j] << " ";
-		cout << endl;
+void Set::print(int nSets){
+	for(int blocksPerSet = 0; blocksPerSet < associativity; ++blocksPerSet){
+		cout << nSets << "     ";
+		line[blocksPerSet].print();
 	}
 }
 
@@ -216,4 +188,14 @@ CacheLine::CacheLine(){
 	word = new int [blockSize];
 	for(int i = 0; i < blockSize; ++i)
 		word[i] = 0;
+}
+
+void CacheLine::print(){
+	// valid AND dirty??
+	cout << valid << "   " << setw(8) << setfill('0') << hex << tag << "    " << valid << " ";
+	// print words
+	for(int wordsPerBlock = 0; wordsPerBlock < blockSize; ++wordsPerBlock)
+		cout << "   " << setw(8) << setfill('0') << word[wordsPerBlock];
+	
+	cout << endl;
 }
