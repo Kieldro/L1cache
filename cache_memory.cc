@@ -178,9 +178,30 @@ void CacheMemory::print(){
 	cout << " DataReads: " << reads;
 	cout << " DataWrites: " << writes << endl;
 	cout << "Miss rate: " << endl;
-	cout << "Total: " << float( ( float(reads) + float(writes) ) / ( float(totalReads) + float(totalWrites) ) );
-	cout << " DataReads: " << float( float(reads) / float(totalReads) );
-	cout << " DataWrites: " << float( float(writes) / float(totalWrites) ) << endl;
+	if(totalReads + totalWrites == 0)
+	{
+		cout << "Total: 0";
+	}
+	else
+	{
+		cout << "Total: " << float( ( float(reads) + float(writes) ) / ( float(totalReads) + float(totalWrites) ) );
+	}
+	if(totalReads == 0)
+	{
+		cout << " DataReads: 0";
+	}
+	else
+	{
+		cout << " DataReads: " << float( float(reads) / float(totalReads) );
+	}
+	if(totalWrites == 0)
+	{
+		cout << " DataWrites: 0" <<  endl;
+	}
+	else
+	{
+		cout << " DataWrites: " << float( float(writes) / float(totalWrites) ) << endl;
+	}
 	cout << "Number of Dirty Blocks Evicted From the Cache: " << evicted << endl << endl;
 	
 	cout << "CACHE CONTENTS" << endl;
