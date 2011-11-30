@@ -21,10 +21,12 @@ struct Set{
 	CacheLine *line;
 	static int blockSize;
 	static int associativity;
+	int LRU;
 
 	Set();
 	int read(unsigned tag, unsigned wordIdx, bool &found);
 	void write(int data, unsigned tag, unsigned wordIdx, bool &found);
+	void updateLRU();
 	void print(int nSets);
 };
 

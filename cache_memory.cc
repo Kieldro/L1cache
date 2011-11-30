@@ -24,7 +24,6 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	//int totalBlocks = capacity;
 	hits = misses = writes = reads = evicted = 0;
 	
-	
 	const int numSets = capacity / blockSize / associativity;
 	//assert(divides nicely);
 	if(DEBUG) cout << "cache capacity: " << capacity << " words" << endl;
