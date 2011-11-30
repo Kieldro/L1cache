@@ -69,30 +69,25 @@ int CacheMemory::read (unsigned address){
 	parseAddress(address, wordIdx, set, tag);		// parameters passed by reference
 	data = sets[set].read(tag, wordIdx, found);	
 
-	if(found)
-	{
-		data = sets[set].read(tag, wordIdx, found);		// found passed by ref< wordIdx << endl;
+	if(found){
+		data = sets[set].read(tag, wordIdx, found);		// found passed by ref
 		++hits;
-	}
-	else{		// not found in cache
+	}else{		// not found in cache
 		++reads;
 		data = mem->read(address);
-		if(sets[set].line[sets[set].LRU].dirty)	// block to be replaced is dirty; write old block to memory, then replace with new block
-		{
+		// block to be replaced is dirty; write old block to memory, then replace with new block
+		if(sets[set].line[sets[set].LRU].dirty){
 			int start = spliceAddress(set, sets[set].line[sets[set].LRU].tag);
 			for(int i = 0; i < blockSize; i++)
-			{
 				mem->write(start + i, sets[set].line[sets[set].LRU].word[i]);
-			}
 			evicted++;
 		}
 		
 		int start = address - (address % blockSize);		// start at first word in block
 		for(int i = 0; i < blockSize; i++)
-		{
 			// i never exceeds mem.capacity because both are mulitples of blockSize
 			sets[set].line[sets[set].LRU].word[i] = mem->read(start + i);
-		}
+		
 		sets[set].line[sets[set].LRU].tag = tag;
 		sets[set].line[sets[set].LRU].valid = true;
 		sets[set].line[sets[set].LRU].dirty = false;
@@ -161,7 +156,7 @@ void CacheMemory::write (unsigned address, int data){
 void CacheMemory::parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag){
 	wordIdx = address & wMask;
 	set = (address & sMask) >> wordOffsetBits;
-	// There is some weird casting behavior where:
+	// There is some weird casting behavior where these 2 statements aren't equal:
 	// wordOffsetBits = (float)log(blockSize)/log(2);
 	// wordOffsetBits = log(blockSize)/log(2);
 	
@@ -178,30 +173,19 @@ void CacheMemory::print(){
 	cout << " DataReads: " << reads;
 	cout << " DataWrites: " << writes << endl;
 	cout << "Miss rate: " << endl;
+	//special cases
 	if(totalReads + totalWrites == 0)
-	{
 		cout << "Total: 0";
-	}
 	else
-	{
-		cout << "Total: " << float( ( float(reads) + float(writes) ) / ( float(totalReads) + float(totalWrites) ) );
-	}
+		cout << "Total: " << float(reads + writes) / float(totalReads + totalWrites);
 	if(totalReads == 0)
-	{
 		cout << " DataReads: 0";
-	}
 	else
-	{
-		cout << " DataReads: " << float( float(reads) / float(totalReads) );
-	}
+		cout << " DataReads: " << float(reads) / float(totalReads);
 	if(totalWrites == 0)
-	{
 		cout << " DataWrites: 0" <<  endl;
-	}
 	else
-	{
-		cout << " DataWrites: " << float( float(writes) / float(totalWrites) ) << endl;
-	}
+		cout << " DataWrites: " << float(writes) / float(totalWrites) << endl;
 	cout << "Number of Dirty Blocks Evicted From the Cache: " << evicted << endl << endl;
 	
 	cout << "CACHE CONTENTS" << endl;
@@ -211,8 +195,8 @@ void CacheMemory::print(){
 	
 	cout << endl;
 	
-	for(int nSets = 0; nSets < numSets; nSets++)
-		sets[nSets].print(nSets);
+	for(int set = 0; set < numSets; set++)
+		sets[set].print(set);
 	cout << endl;
 	//print mem
 	mem->print();
@@ -220,7 +204,7 @@ void CacheMemory::print(){
 
 // run through entire cache and write all the dirty blocks to main mem (non-evicted)
 void CacheMemory::writeDirtyBlocks (){
-	unsigned address;
+	unsigned address = -1;
 	
 	for(int s = 0; s < numSets; ++s)
 		for(int l = 0; l < associativity; ++l)		// check all cacheLines in set
@@ -228,16 +212,13 @@ void CacheMemory::writeDirtyBlocks (){
 				address = spliceAddress(s, sets[s].line[l].tag);
 				for(int w = 0; w < blockSize; ++w)		//write block
 					mem->write(address + w, sets[s].line[l].word[w]);
-		}
-	
+			}
 }
 
 unsigned CacheMemory::spliceAddress (unsigned set, unsigned tag){	
-	unsigned address;
-	unsigned temp;
+	unsigned address = 0x00;		// ZEXT
+	unsigned temp = 0x00;
 	
-	address = 0x00;		// ZEXT
-	temp = 0x00;
 	address = (address | tag) << (32 - tagBits);
 	temp = (set | temp) << wordOffsetBits;
 	address |= temp;
@@ -277,14 +258,13 @@ void Set::write(int data, unsigned tag, unsigned wordIdx, bool &found){
 }
 
 void Set::print(int set){
-	for(int blocksPerSet = 0; blocksPerSet < associativity; ++blocksPerSet){
+	for(int l = 0; l < associativity; ++l){
 		cout << hex << set << "     ";
-		line[blocksPerSet].print();
+		line[l].print();
 	}
 }
 
-void Set::updateLRU()
-{
+void Set::updateLRU(){
 	LRU = (LRU + 1) % associativity;
 }
 
@@ -301,8 +281,8 @@ CacheLine::CacheLine(){
 void CacheLine::print(){
 	cout << valid << "   " << setw(8) << setfill('0') << hex << tag << "    " << dirty << " ";
 	// print words
-	for(int wordsPerBlock = 0; wordsPerBlock < blockSize; ++wordsPerBlock)
-		cout << "   " << setw(8) << setfill('0') << word[wordsPerBlock];
+	for(int i = 0; i < blockSize; ++i)
+		cout << "   " << setw(8) << setfill('0') << word[i];
 	
 	cout << endl;
 }
