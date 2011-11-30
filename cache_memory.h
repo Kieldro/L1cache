@@ -39,7 +39,7 @@ class CacheMemory{
 		int setBits, wordOffsetBits, tagBits;
 		int numSets;
 		unsigned wMask, sMask, tMask;
-		int hits, misses, reads, writes, evicted;		// syntactic sugar
+		int hits, misses, reads, totalReads, writes, totalWrites, evicted;		// syntactic sugar
 		void parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag);
 		unsigned spliceAddress (unsigned set, unsigned tag);
 	public: 

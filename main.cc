@@ -46,9 +46,9 @@ int main (int argc, char *argv[ ]){
 		exit (2);
 	}
 	
-	cout << "Cache Capacity: " << cache_capacity << " KiB" << endl;
-	cout << "Cache BlockSize: " << cache_blocksize << " Bytes" << endl;
-	cout << "Cache Associativity: " << cache_associativity << " blocks per set" << endl;
+	if(DEBUG) cout << "Cache Capacity: " << cache_capacity << " KiB" << endl;
+	if(DEBUG) cout << "Cache BlockSize: " << cache_blocksize << " Bytes" << endl;
+	if(DEBUG) cout << "Cache Associativity: " << cache_associativity << " blocks per set" << endl;
 
 	// check if commandline parameters are valid
 	float capLog = log(cache_capacity)/log(2);
@@ -56,10 +56,10 @@ int main (int argc, char *argv[ ]){
 	float assocLog = log(cache_associativity)/log(2);
 	// -c <capacity> with <capacity> in KiB: 4, 8, 16, 32, or 64.
 	assert(capLog == int(capLog) );		// assert power of 2
-	assert(cache_capacity >= 4 && cache_capacity <= 64);
+	assert(cache_capacity >= 1 && cache_capacity <= 64);
 	// -b <blocksize> with <blocksize> in bytes:
 	//  4, 8, 16, 32, 64, 128, 256, or 512.
-	assert(blockLog == int(blockLog) );		// assert power of 2
+	//assert(blockLog == int(blockLog) );		// assert power of 2
 	assert(cache_blocksize >= 4 && cache_blocksize <= 512);
 	// -a <associativity> where <associativity> is integer size of set:
 	// 1, 2, 4, 8, 16. 
@@ -106,6 +106,6 @@ void run(int cache_associativity, int cache_blocksize, int cache_capacity){
 	cache.writeDirtyBlocks();
 	if(DEBUG) cout << "End of input.\n";
 	
-	//cache.print();
+	cache.print();
 	if(DEBUG) cout << "SHAZAM!" << endl;
 }
