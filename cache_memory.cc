@@ -115,8 +115,16 @@ void CacheMemory::write (unsigned address, int data){
 
 	if(!found)
 		{
+			read(address); // read the cache line
+			sets[set].line[sets[set].getLRU()].word[address % blockSize] = data; // modify it with the write
+			sets[set].line[sets[set].getLRU()].dirty = true; // then mark it as dirty
 			
 		}
+	else
+		 {
+			sets[set].line[sets[set].getLRU()].word[address%blockSize] = data;
+			
+		 }
 		//sets[set].line[] = data;		// write in whole block??
 		;
 	
@@ -172,7 +180,7 @@ void CacheMemory::print(){
 		sets[nSets].print(nSets);
 	
 	//print mem
-	mem->print();
+	//mem->print();
 	
 	/*
 	Set   V    Tag    Dirty    Word0      Word1      Word2      Word3      Word4      Word5      Word6      Word7   
