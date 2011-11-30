@@ -21,10 +21,9 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	mem = new MainMemory;		// fixed segfault
 	associativity = assoc;
 	blockSize = bSize / 4;		// convert from bytes to words
-	//int totalBlocks = capacity;
 	hits = misses = writes = reads = evicted = 0;
+	numSets = capacity / blockSize / associativity;
 	
-	const int numSets = capacity / blockSize / associativity;
 	//assert(divides nicely);
 	if(DEBUG) cout << "cache capacity: " << capacity << " words" << endl;
 	if(DEBUG) cout << "block size: " << blockSize << " words" << endl;
@@ -50,9 +49,6 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	Set::associativity = associativity;
 	Set::blockSize = blockSize;
 	sets = new Set [numSets];
-	
-	if(DEBUG) cout << "set[0]: " << sets[0].associativity << " cacheLines" << endl;
-	
 }
 
 //*** destructor
@@ -167,21 +163,10 @@ void CacheMemory::write (unsigned address, int data){
 // parse out the tag, set and word offset from the address
 void CacheMemory::parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag){
 	wordIdx = address & wMask;
-	
-	//set = ( ( address / blockSize ) % (blockSize * associativity) );
-	// I believe the correct formula to find out which set the word should be stored is found by
-	// set = ( (word_address / words_per_block) % words_per_set);
-	// for example, in sample_output_file...
-	// >> 1 003f8010 11111111
-	// 003f8010 = 4161552 in decimal (word_address)
-	// word_address / words_per_block = 4161552 / 8 = 520194 * words_per_set = 520194 % 32 = 2,
-	// and 2 is the set 003f8010 is stored in 
-	
 	set = (address & sMask) >> wordOffsetBits;
 	// There is some weird casting behavior where:
 	// wordOffsetBits = (float)log(blockSize)/log(2);
 	// wordOffsetBits = log(blockSize)/log(2);
-	// give 2 different values. That's what was messing up the masks.
 	
 	tag = (address & tMask) >> (32 - tagBits);
 	// if(DEBUG) cout << "wordIdx: " << wordIdx << "" << endl;
@@ -208,7 +193,6 @@ void CacheMemory::print(){
 	
 	cout << endl;
 	
-	int numSets = capacity / blockSize / associativity;
 	for(int nSets = 0; nSets < numSets; nSets++)
 		sets[nSets].print(nSets);
 	
@@ -220,6 +204,26 @@ void CacheMemory::print(){
 	0     1   00003fe8    0    003fe800   003fe801   003fe802   003fe803   003fe804   003fe805   003fe806   003fe807   
 	0     1   00003f80    0    003f8000   003f8001   003f8002   003f8003   66666666   003f8005   003f8006   003f8007  
 	*/
+}
+
+// run through entire cache and write all the dirty blocks to main mem (non-evicted)
+void CacheMemory::writeDirtyBlocks (){
+	unsigned address;
+	unsigned temp;
+	
+	for(int s = 0; s < numSets; ++s)
+		for(int l = 0; l < associativity; ++l)		// check all cacheLines in set
+			if(sets[s].line[l].dirty == DIRTY){
+				// splice address 
+				address = 0x00;		// ZEXT
+				temp = 0x00;
+				address = (address & sets[s].line[l].tag) << (32 - tagBits);
+				temp = (s & temp) << wordOffsetBits;
+				address |= temp;
+				for(int w = 0; w < blockSize; ++w)		//write block
+					mem->write(address + w, sets[s].line[l].word[w]);
+		}
+	
 }
 
 // Set methods
@@ -282,7 +286,6 @@ CacheLine::CacheLine(){
 }
 
 void CacheLine::print(){
-	// valid AND dirty??
 	cout << valid << "   " << setw(8) << setfill('0') << hex << tag << "    " << dirty << " ";
 	// print words
 	for(int wordsPerBlock = 0; wordsPerBlock < blockSize; ++wordsPerBlock)

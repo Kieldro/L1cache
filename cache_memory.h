@@ -38,6 +38,7 @@ class CacheMemory{
 		Set *sets;
 		int capacity, blockSize, associativity;
 		int setBits, wordOffsetBits, tagBits;
+		int numSets;
 		unsigned wMask, sMask, tMask;
 		vector<int> dirtyBlocks;
 		int hits, misses, reads, writes, evicted;		// syntactic sugar
@@ -49,6 +50,7 @@ class CacheMemory{
 		int read(unsigned address);
 		void write(unsigned address, int data);
 		void parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag);
+		void writeDirtyBlocks ();
 };
 
 #endif

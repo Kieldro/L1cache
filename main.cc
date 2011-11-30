@@ -102,6 +102,8 @@ void run(int cache_associativity, int cache_blocksize, int cache_capacity){
 			if(DEBUG) cout << "Read memory[" << hex << address << "]: 0x" << x << endl;
 		}
 	}
+	// write all dirty lines to memory
+	cache.writeDirtyBlocks();
 	if(DEBUG) cout << "End of input.\n";
 	
 	//cache.print();
