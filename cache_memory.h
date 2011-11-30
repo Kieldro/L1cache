@@ -42,6 +42,8 @@ class CacheMemory{
 		unsigned wMask, sMask, tMask;
 		vector<int> dirtyBlocks;
 		int hits, misses, reads, writes, evicted;		// syntactic sugar
+		void parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag);
+		unsigned spliceAddress (unsigned set, unsigned tag);
 	public: 
 		MainMemory *mem;		// public for debug
 		CacheMemory(int assoc, int bSize, int cap);
@@ -49,7 +51,6 @@ class CacheMemory{
 		void print();
 		int read(unsigned address);
 		void write(unsigned address, int data);
-		void parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag);
 		void writeDirtyBlocks ();
 };
 

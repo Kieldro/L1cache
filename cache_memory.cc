@@ -80,7 +80,7 @@ int CacheMemory::read (unsigned address){
 		data = mem->read(address);
 		if(sets[set].line[sets[set].getLRU()].dirty)	// block to be replaced is dirty; write old block to memory, then replace with new block
 		{
-			int start = address - (address % blockSize);		// align
+			int start = address - (address % blockSize);
 			for(int i = 0; i < blockSize; i++)
 			{
 				mem->write(start + i, sets[set].line[sets[set].getLRU()].word[i]);
@@ -97,8 +97,7 @@ int CacheMemory::read (unsigned address){
 		sets[set].line[sets[set].getLRU()].tag = tag;
 		sets[set].line[sets[set].getLRU()].valid = true;
 		sets[set].line[sets[set].getLRU()].dirty = false;
-		sets[set].updateLRU();
-
+		
 		++misses;
 	}
 	
@@ -122,7 +121,7 @@ void CacheMemory::write (unsigned address, int data){
 		{
 			if(sets[set].line[sets[set].getLRU()].dirty)
 			{
-				int start = address - (address % blockSize);		// align
+				int start = address - (address % blockSize);
 				for(int i = 0; i < blockSize; i++)
 				{
 					mem->write(start + i, sets[set].line[sets[set].getLRU()].word[i]);
@@ -197,7 +196,7 @@ void CacheMemory::print(){
 		sets[nSets].print(nSets);
 	
 	//print mem
-	mem->print();
+	//mem->print();
 	
 	/*
 	Set   V    Tag    Dirty    Word0      Word1      Word2      Word3      Word4      Word5      Word6      Word7   
@@ -209,21 +208,28 @@ void CacheMemory::print(){
 // run through entire cache and write all the dirty blocks to main mem (non-evicted)
 void CacheMemory::writeDirtyBlocks (){
 	unsigned address;
-	unsigned temp;
 	
 	for(int s = 0; s < numSets; ++s)
 		for(int l = 0; l < associativity; ++l)		// check all cacheLines in set
 			if(sets[s].line[l].dirty == DIRTY){
-				// splice address 
-				address = 0x00;		// ZEXT
-				temp = 0x00;
-				address = (address & sets[s].line[l].tag) << (32 - tagBits);
-				temp = (s & temp) << wordOffsetBits;
-				address |= temp;
+				address = spliceAddress(s, sets[s].line[l].tag);
 				for(int w = 0; w < blockSize; ++w)		//write block
 					mem->write(address + w, sets[s].line[l].word[w]);
 		}
 	
+}
+
+unsigned CacheMemory::spliceAddress (unsigned set, unsigned tag){	
+	unsigned address;
+	unsigned temp;
+	
+	address = 0x00;		// ZEXT
+	temp = 0x00;
+	address = (address & tag) << (32 - tagBits);
+	temp = (set & temp) << wordOffsetBits;
+	address |= temp;
+	
+	return address;	
 }
 
 // Set methods
