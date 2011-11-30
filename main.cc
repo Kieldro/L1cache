@@ -65,9 +65,6 @@ int main (int argc, char *argv[ ]){
 	// 1, 2, 4, 8, 16. 
 	assert(assocLog == int(assocLog) );		// assert power of 2
 	assert(cache_associativity >= 1 && cache_associativity <= 16);
-
-
-	// initialite cache and main memory
 	
 	run(cache_associativity, cache_blocksize, cache_capacity);
 	
@@ -99,9 +96,10 @@ void run(int cache_associativity, int cache_blocksize, int cache_capacity){
 		if(read_write == CACHE_WRITE){
 		  	cin >> hex >> data;
 			if(DEBUG) cout << "Write: memory[" << hex << address << "] = 0x" << data << endl;
-			(cache.mem)->write(address, data);		//write to memory	
+			cache.write(address, data);
 		}else{		//read
-			if(DEBUG) cout << "Read memory[" << hex << address << "]: 0x" << cache.read(address) << endl;
+			int x = cache.read(address);
+			if(DEBUG) cout << "Read memory[" << hex << address << "]: 0x" << x << endl;
 		}
 	}
 	if(DEBUG) cout << "End of input.\n";

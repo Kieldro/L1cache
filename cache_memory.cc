@@ -73,12 +73,12 @@ int CacheMemory::read (unsigned address){
 	data = sets[set].read(tag, wordIdx, found);		// found passed by ref
 	if(found)
 		++hits;
-	else{
-		
+	else{		// not found in cache
 		data = mem->read(address);
+		int start = address - (address % blockSize);		// start at first word in block
 		for(int i = 0; i < blockSize; i++)
 		{
-			sets[set].line[sets[set].getLRU()].word[i] = mem->read(address + i);
+			sets[set].line[sets[set].getLRU()].word[i] = mem->read(start + i);
 		}
 		sets[set].line[sets[set].getLRU()].tag = tag;
 		sets[set].line[sets[set].getLRU()].valid = true;
@@ -86,6 +86,8 @@ int CacheMemory::read (unsigned address){
 		++misses;
 	}
 	++reads;
+	
+	if(DEBUG) sets[set].print(set);
 	
 	return data;
 }
@@ -132,7 +134,7 @@ void CacheMemory::parseAddress (const unsigned address, unsigned &wordIdx, unsig
 }
 
 void CacheMemory::print(){
-	cout << "STATISTICS:" << endl;
+	cout << "STATISTICS:" << dec << endl;
 	cout << "Misses:" << endl;
 	cout << "Total: " << misses;
 	cout << " DataReads: " << reads;
@@ -156,6 +158,7 @@ void CacheMemory::print(){
 	
 	//print mem
 	//mem->print();
+	
 	/*
 	Set   V    Tag    Dirty    Word0      Word1      Word2      Word3      Word4      Word5      Word6      Word7   
 	0     1   00003fe8    0    003fe800   003fe801   003fe802   003fe803   003fe804   003fe805   003fe806   003fe807   
@@ -193,7 +196,7 @@ void Set::write(int data, unsigned tag, unsigned wordIdx, bool &found){
 
 void Set::print(int nSets){
 	for(int blocksPerSet = 0; blocksPerSet < associativity; ++blocksPerSet){
-		cout << nSets << "     ";
+		cout << hex << nSets << "     ";
 		line[blocksPerSet].print();
 	}
 }
