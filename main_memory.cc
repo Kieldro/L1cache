@@ -64,11 +64,11 @@ void MainMemory::print(){
 	cout << "Address    Words" << endl;
 	
 	int to =  STARTING_ADDRESS + 1023;
-	for(int i =  STARTING_ADDRESS; i < to; ++i){
+	for(int i =  STARTING_ADDRESS; i < to; i=i+8){
 		//if(DEBUG) cout << "i = " << dec << i << endl;
 		cout << setw(8) << setfill('0') << hex << i;
 		for(int j = 0; j < 8; j++)
-			cout << " " << setw(8) << setfill('0') << memory[i];
+			cout << "   " << setw(8) << setfill('0') << memory[i+j];
 		
 		cout << endl;
 	}

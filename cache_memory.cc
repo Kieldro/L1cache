@@ -164,7 +164,7 @@ void CacheMemory::print(){
 	}
 	
 	//print mem
-	//mem->print();
+	mem->print();
 	/*
 Set   V    Tag    Dirty    Word0      Word1      Word2      Word3      Word4      Word5      Word6      Word7   
 0     1   00003fe8    0    003fe800   003fe801   003fe802   003fe803   003fe804   003fe805   003fe806   003fe807   
