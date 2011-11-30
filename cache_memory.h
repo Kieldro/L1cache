@@ -2,7 +2,6 @@
 #define _CACHE_MEMORY_H
 
 #include <iostream>
-#include <vector>
 #include <iomanip>
 #include "main_memory.h"
 
@@ -40,7 +39,6 @@ class CacheMemory{
 		int setBits, wordOffsetBits, tagBits;
 		int numSets;
 		unsigned wMask, sMask, tMask;
-		vector<int> dirtyBlocks;
 		int hits, misses, reads, writes, evicted;		// syntactic sugar
 		void parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag);
 		unsigned spliceAddress (unsigned set, unsigned tag);
