@@ -81,6 +81,7 @@ int CacheMemory::read (unsigned address){
 			sets[set].line[sets[set].getLRU()].word[i] = mem->read(address + i);
 		}
 		sets[set].line[sets[set].getLRU()].tag = tag;
+		sets[set].line[sets[set].getLRU()].valid = true;
 		sets[set].updateLRU();
 		++misses;
 	}
