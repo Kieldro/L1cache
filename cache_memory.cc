@@ -29,8 +29,8 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	if(DEBUG) cout << "cache capacity: " << capacity << " words" << endl;
 	if(DEBUG) cout << "block size: " << blockSize << " words" << endl;
 	if(DEBUG) cout << "number of sets: " << numSets << " sets" << endl;
-	setBits = log(numSets)/log(2);
-	wordOffsetBits = log(blockSize)/log(2);
+	setBits = (float)log(numSets)/log(2);
+	wordOffsetBits = (float)log(blockSize)/log(2);
 	tagBits = 32 - setBits - wordOffsetBits;
 
 	if(DEBUG) cout << "bits for set index: " << setBits << " bits" << endl;
@@ -103,7 +103,7 @@ void CacheMemory::write (unsigned address, int data){
 void CacheMemory::parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag){
 	wordIdx = address & wMask;
 	
-	set = ( ( address / blockSize ) % (blockSize * associativity) );
+	//set = ( ( address / blockSize ) % (blockSize * associativity) );
 	// I believe the correct formula to find out which set the word should be stored is found by
 	// set = ( (word_address / words_per_block) % words_per_set);
 	// for example, in sample_output_file...
@@ -111,9 +111,12 @@ void CacheMemory::parseAddress (const unsigned address, unsigned &wordIdx, unsig
 	// 003f8010 = 4161552 in decimal (word_address)
 	// word_address / words_per_block = 4161552 / 8 = 520194 * words_per_set = 520194 % 32 = 2,
 	// and 2 is the set 003f8010 is stored in 
-	// you can repeat this for the other memory addresses in the input_trace.txt and see it be true
-	// I think you were on the right track, but I couldn't figure it out through masks; if you still want to use masks, you're free to 
-	// edit/revert my revision of the line above.
+	
+	set = (address & sMask) >> wordOffsetBits;
+	// There is some weird casting behavior where:
+	// wordOffsetBits = (float)log(blockSize)/log(2);
+	// wordOffsetBits = log(blockSize)/log(2);
+	// give 2 different values. That's what was messing up the masks.
 	
 	tag = (address & tMask) >> (32 - tagBits);
 	// if(DEBUG) cout << "wordIdx: " << wordIdx << "" << endl;

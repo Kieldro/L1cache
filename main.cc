@@ -8,7 +8,7 @@ Simulates and L1 cache
 
 notes:
 run with:
-make ; ./cache_sim -c8 -b16 -a4 < input_trace.txt ; make clean
+make ; ./cache_sim -c4 -b32 -a4 < input_trace.txt ; make clean
 
 16 MiB ==  16 * 2^20 bytes
 newest UML diagram at: http://www.gliffy.com/pubdoc/3102540/L.png
@@ -106,6 +106,6 @@ void run(int cache_associativity, int cache_blocksize, int cache_capacity){
 	}
 	if(DEBUG) cout << "End of input.\n";
 	
-	cache.print();
+	//cache.print();
 	if(DEBUG) cout << "SHAZAM!" << endl;
 }
