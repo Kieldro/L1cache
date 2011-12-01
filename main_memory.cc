@@ -8,8 +8,8 @@
 
 using namespace std;
 
-//*** constructor
 
+//*** constructor
 MainMemory::MainMemory(){
 	if(DEBUG) cout << "CONSTRUCTING MainMemory obj: " << this << endl;
 	capacity = 16 * pow(2, 20)  / 4;	// 16 MiB to 32 bit words
@@ -61,7 +61,6 @@ void MainMemory::print(){
 	
 	int to =  STARTING_ADDRESS + 1023;
 	for(int i =  STARTING_ADDRESS; i < to; i=i+8){
-		//if(DEBUG) cout << "i = " << dec << i << endl;
 		cout << setw(8) << setfill('0') << hex << i;
 		for(int j = 0; j < 8; j++)
 			cout << "   " << setw(8) << setfill('0') << memory[i+j];

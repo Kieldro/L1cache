@@ -10,9 +10,12 @@
 
 using namespace std;
 
-int Set::associativity = 0;
-int Set::blockSize = 0;
-int CacheLine::blockSize = 0;
+int CacheMemory::wordOffsetBits = -1;
+int CacheMemory::tagBits = -1;
+int CacheMemory::setBits = -1;
+int Set::associativity = -1;
+int Set::blockSize = -1;
+int CacheLine::blockSize = -1;
 
 // CacheMemory method definitions
 CacheMemory::CacheMemory(int assoc, int bSize, int cap){
@@ -70,31 +73,36 @@ int CacheMemory::read (unsigned address){
 	++totalReads;
 	
 	parseAddress(address, wordIdx, set, tag);		// parameters passed by reference
-	data = sets[set].read(tag, wordIdx, found);	
+	data = sets[set].read(tag, wordIdx, found);		// found passed by ref
 
 	if(found){
-		data = sets[set].read(tag, wordIdx, found);		// found passed by ref
+		//data = sets[set].read(tag, wordIdx, found);
 		++hits;
 	}else{		// not found in cache
-		++reads;
+		++reads;		// from memory
 		data = mem->read(address);
-		// block to be replaced is dirty; write old block to memory, then replace with new block
-		if(sets[set].line[sets[set].LRU].dirty){
-			int start = spliceAddress(set, sets[set].line[sets[set].LRU].tag);
+		
+		// 
+		CacheLine *LRU_line = &sets[set].line[sets[set].LRU];	// LRUed line in the set
+		if(LRU_line->dirty){			// block to be replaced is dirty
+			// write old block to memory
+			int start = spliceAddress(set, LRU_line->tag);
 			for(int i = 0; i < blockSize; i++)
-				mem->write(start + i, sets[set].line[sets[set].LRU].word[i]);
-			evicted++;
+				mem->write(start + i, LRU_line->word[i]);
+			++evicted;
 		}
 		
+		// write in new line
 		int start = address - (address % blockSize);		// start at first word in block
-		for(int i = 0; i < blockSize; i++)
+		for(int i = 0; i < blockSize; i++)		// write block
 			// i never exceeds mem.capacity because both are mulitples of blockSize
-			sets[set].line[sets[set].LRU].word[i] = mem->read(start + i);
+			LRU_line->word[i] = mem->read(start + i);
 		
 		sets[set].line[sets[set].LRU].tag = tag;
 		sets[set].line[sets[set].LRU].valid = true;
 		sets[set].line[sets[set].LRU].dirty = false;
 		sets[set].updateLRU();
+		
 		++misses;
 	}
 	
@@ -197,8 +205,9 @@ void CacheMemory::print(){
 	for(int set = 0; set < numSets; set++)
 		sets[set].print(set);
 	cout << endl;
+	
 	//print mem
-	mem->print();
+	//mem->print();
 }
 
 // run through entire cache and write all the dirty blocks to main mem (non-evicted)

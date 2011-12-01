@@ -35,12 +35,11 @@ class CacheMemory{
 	private:
 		Set *sets;
 		int capacity, blockSize, associativity;
-		int setBits, wordOffsetBits, tagBits;
+		static int setBits, wordOffsetBits, tagBits;
 		int numSets;
 		unsigned wMask, sMask, tMask;
 		int hits, misses, reads, totalReads, writes, totalWrites, evicted;		// syntactic sugar
 		void parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag);
-		unsigned spliceAddress (unsigned set, unsigned tag);
 	public: 
 		MainMemory *mem;		// public for debug
 		CacheMemory(int assoc, int bSize, int cap);
@@ -49,6 +48,7 @@ class CacheMemory{
 		int read(unsigned address);
 		void write(unsigned address, int data);
 		void writeDirtyBlocks ();
+		static unsigned spliceAddress (unsigned set, unsigned tag);
 };
 
 #endif

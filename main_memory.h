@@ -2,7 +2,7 @@
 #define _MAIN_MEMORY_H
 
 #define STARTING_ADDRESS 0x003f7f00
-#define DEBUG true
+#define DEBUG false
 #define DIRTY true
 
 #include<iostream>
