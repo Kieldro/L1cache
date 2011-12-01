@@ -207,7 +207,7 @@ void CacheMemory::print(){
 	cout << endl;
 	
 	//print mem
-	//mem->print();
+	mem->print();
 }
 
 // run through entire cache and write all the dirty blocks to main mem (non-evicted)
