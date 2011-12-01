@@ -34,8 +34,8 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	if(DEBUG) cout << "block size: " << blockSize << " words" << endl;
 	if(DEBUG) cout << "associativity: " << associativity << " words" << endl;
 	if(DEBUG) cout << "number of sets: " << numSets << " sets" << endl;
-	setBits = (float)log(numSets)/log(2);
-	wordOffsetBits = (float)log(blockSize)/log(2);
+	setBits = (float)log2(numSets);
+	wordOffsetBits = (float)log2(blockSize);
 	tagBits = 32 - setBits - wordOffsetBits;
 
 	if(DEBUG) cout << "bits for set index: " << setBits << " bits" << endl;
