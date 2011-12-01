@@ -23,10 +23,13 @@ CacheMemory::CacheMemory(int assoc, int bSize, int cap){
 	blockSize = bSize / 4;		// convert from bytes to words
 	hits = misses = writes = reads = evicted = totalReads = totalWrites = 0;
 	numSets = capacity / blockSize / associativity;
+	if(numSets == 0)
+		numSets = 1;	// minimum number of sets
 	
 	//assert(divides nicely);
 	if(DEBUG) cout << "cache capacity: " << capacity << " words" << endl;
 	if(DEBUG) cout << "block size: " << blockSize << " words" << endl;
+	if(DEBUG) cout << "associativity: " << associativity << " words" << endl;
 	if(DEBUG) cout << "number of sets: " << numSets << " sets" << endl;
 	setBits = (float)log(numSets)/log(2);
 	wordOffsetBits = (float)log(blockSize)/log(2);
@@ -141,7 +144,7 @@ void CacheMemory::write (unsigned address, int data){
 	if(DEBUG) sets[set].print(set);
 }
 
-// parse out the tag, set and word offset from the address
+// parse out the tag, set and word offset fields from the address into variables
 void CacheMemory::parseAddress (const unsigned address, unsigned &wordIdx, unsigned &set, unsigned &tag){
 	wordIdx = address & wMask;
 	set = (address & sMask) >> wordOffsetBits;
@@ -155,6 +158,7 @@ void CacheMemory::parseAddress (const unsigned address, unsigned &wordIdx, unsig
 	// if(DEBUG) cout << "tag: 0x" << hex << tag << "" << endl;
 }
 
+// prints contents of cache then mem
 void CacheMemory::print(){
 	cout << "STATISTICS:" << dec << endl;
 	cout << "Misses:" << endl;
@@ -210,6 +214,7 @@ void CacheMemory::writeDirtyBlocks (){
 			}
 }
 
+// reconstructs address of a block from its tag and set number
 unsigned CacheMemory::spliceAddress (unsigned set, unsigned tag){	
 	unsigned address = 0x00;		// ZEXT
 	unsigned temp = 0x00;
@@ -228,30 +233,29 @@ Set::Set() {
 	LRU = 0;
 }
 
+// helper for CacheMemory.read()
 int Set::read(unsigned tag, unsigned wordIdx, bool &found){
 	for(int i = 0; i < associativity; ++i)
 		if(line[i].tag == tag && line[i].valid){
-			
 			found = true;
 			return line[i].word[wordIdx];		// requested word found
 		}
-
 	found = false;
 	return 0;		// word not found
 }
 
+// helper for CacheMemory.write()
 void Set::write(int data, unsigned tag, unsigned wordIdx, bool &found){
-	for(int i = 0; i < associativity; ++i){
+	for(int i = 0; i < associativity; ++i)
 		if(line[i].tag == tag && line[i].valid){
 			found = true;
 			line[i].word[wordIdx] = data;		// requested word found
 			return;
 		}
-	}
-	
 	found = false;		// not found in cache
 }
 
+// helper for CacheMemory.print()
 void Set::print(int set){
 	for(int l = 0; l < associativity; ++l){
 		cout << hex << set << "     ";
@@ -273,6 +277,7 @@ CacheLine::CacheLine(){
 		word[i] = 0;
 }
 
+// helper for Set.print()
 void CacheLine::print(){
 	cout << valid << "   " << setw(8) << setfill('0') << hex << tag << "    " << dirty << " ";
 	// print words
